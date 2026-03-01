@@ -991,6 +991,7 @@ $terminalStatuses = jthTerminalStatuses();
         let CUSTOMER_HISTORY_FILTER_STATUS = 'all';
         let CUSTOMER_HISTORY_FILTER_FROM = '';
         let CUSTOMER_HISTORY_FILTER_TO = '';
+        let PURGED_CUSTOMER_IDS = new Set();
         let AUDIT_FILTER_ACTION = 'all';
         let AUDIT_FILTER_ACTOR = 'all';
         let AUDIT_FILTER_FROM = '';
@@ -2148,8 +2149,12 @@ $terminalStatuses = jthTerminalStatuses();
 
             const byCustomer = {};
             GLOBAL_DATA.forEach((row) => {
-                const name = String(row.customer_name_snapshot || row.customer || row.name || 'Guest').trim();
-                const key = name.toLowerCase();
+                const rowCustomerId = String(row.customer_id || '').trim();
+                const isPurgedInCustomerTab = rowCustomerId !== '' && PURGED_CUSTOMER_IDS.has(rowCustomerId);
+                const name = isPurgedInCustomerTab
+                    ? 'Removed Customer'
+                    : String(row.customer_name_snapshot || row.customer || row.name || 'Guest').trim();
+                const key = rowCustomerId !== '' ? rowCustomerId : name.toLowerCase();
                 if (!byCustomer[key]) {
                     byCustomer[key] = {
                         name,
@@ -3550,7 +3555,7 @@ $terminalStatuses = jthTerminalStatuses();
                 showCustomAlert(
                     'success',
                     'Retention Purge Complete',
-                    `Scanned ${Number(res.scanned_customers || 0)} customer records. Purged ${Number(res.purged_customers || 0)} record(s).`
+                    `Scanned ${Number(res.scanned_customers || 0)} customer records. Purged ${Number(res.purged_customers || 0)} record(s). Failed: ${Number(res.failed_customers || 0)}.`
                 );
                 await loadRetentionStatus();
                 await fetchLatestData({ silent: true });
@@ -3575,9 +3580,12 @@ $terminalStatuses = jthTerminalStatuses();
                 }
                 const state = (res && typeof res.state === 'object' && res.state) ? res.state : null;
                 if (!state || !state.last_run_at) {
+                    PURGED_CUSTOMER_IDS = new Set();
                     label.textContent = 'Retention: no run yet';
                     return;
                 }
+                const purgedIds = Array.isArray(state.purged_customer_ids) ? state.purged_customer_ids : [];
+                PURGED_CUSTOMER_IDS = new Set(purgedIds.map((v) => String(v || '').trim()).filter(Boolean));
                 const lastRun = new Date(Number(state.last_run_at) * 1000);
                 const runText = Number.isNaN(lastRun.getTime())
                     ? 'unknown'
@@ -3585,6 +3593,7 @@ $terminalStatuses = jthTerminalStatuses();
                 const purged = Number(state.purged_customers || 0);
                 label.textContent = `Retention • Last: ${runText} • Purged: ${purged}`;
             } catch (_) {
+                PURGED_CUSTOMER_IDS = new Set();
                 label.textContent = 'Retention: unavailable';
             }
         }
