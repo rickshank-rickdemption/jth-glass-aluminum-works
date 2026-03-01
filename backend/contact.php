@@ -6,6 +6,7 @@ require_once 'session.php';
 startSecureSession();
 applySecurityHeaders(true);
 require_once 'mailer.php';
+require_once 'email_fallback.php';
 
 if (!defined('CONTACT_RATE_LIMIT_WINDOW_SECONDS')) {
     define('CONTACT_RATE_LIMIT_WINDOW_SECONDS', 600); // 10 mins
@@ -487,6 +488,18 @@ if ($sent) {
         'uploaded_files' => count($uploadResult['stored'] ?? [])
     ]);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Could not send message. Please try again later.']);
+    $queueId = efbQueueJob($adminEmail, $subject, $body, [
+        'source' => 'contact_form',
+        'from_email' => (string)$email,
+        'from_name' => trim((string)$fname . ' ' . (string)$lname),
+        'has_attachments' => !empty($uploadResult['attachments'])
+    ]);
+    $_SESSION[$cooldownKey] = time();
+    echo json_encode([
+        'status' => 'success',
+        'queued' => true,
+        'queue_id' => $queueId,
+        'message' => 'Message queued due to temporary email service delay. We will process it shortly.'
+    ]);
 }
 ?>

@@ -18,7 +18,15 @@ function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
         $mail->SMTPAuth   = true;
         $mail->Username   = SMTP_USER;
         $mail->Password   = SMTP_PASS;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $secureMode = strtolower(trim((string)SMTP_SECURE));
+        if ($secureMode === 'ssl') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } elseif ($secureMode === 'none' || $secureMode === '') {
+            $mail->SMTPSecure = '';
+            $mail->SMTPAutoTLS = false;
+        } else {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        }
         $mail->Port       = SMTP_PORT;
         $mail->Timeout    = max(5, (int)SMTP_TIMEOUT_SECONDS);
         $mail->SMTPKeepAlive = false;

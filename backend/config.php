@@ -70,6 +70,7 @@ define('SMTP_HOST', envValue('SMTP_HOST', 'smtp.gmail.com'));
 define('SMTP_USER', envValue('SMTP_USER', ''));
 define('SMTP_PASS', envValue('SMTP_PASS', ''));
 define('SMTP_PORT', (int) envValue('SMTP_PORT', '587'));
+define('SMTP_SECURE', strtolower((string) envValue('SMTP_SECURE', 'tls')));
 define('SMTP_TIMEOUT_SECONDS', (int) envValue('SMTP_TIMEOUT_SECONDS', '12'));
 
 define('ADMIN_USER', envValue('ADMIN_USER', 'admin'));
