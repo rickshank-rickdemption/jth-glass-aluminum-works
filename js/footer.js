@@ -310,9 +310,12 @@
                 const result = await response.json();
 
                 if (result.status === 'success') {
-                    setFeedback("Message Sent! We'll be in touch.", false);
+                    const serverMessage = typeof result.message === 'string' && result.message.trim() !== ''
+                        ? result.message.trim()
+                        : "Message Sent! We'll be in touch.";
+                    setFeedback(serverMessage, false);
                     form.reset();
-                    submitBtn.innerText = 'SUCCESS';
+                    submitBtn.innerText = result.queued ? 'QUEUED' : 'SUCCESS';
                 } else {
                     if (result.reason === 'rate_limited') {
                         const wait = parseInt(result.retry_after_seconds, 10) || 60;
