@@ -20,6 +20,8 @@ function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
         $mail->Password   = SMTP_PASS;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = SMTP_PORT;
+        $mail->Timeout    = max(5, (int)SMTP_TIMEOUT_SECONDS);
+        $mail->SMTPKeepAlive = false;
 
         $mail->setFrom(SMTP_USER, 'JTH Glass & Aluminum Works');
         $mail->addAddress($to); 
