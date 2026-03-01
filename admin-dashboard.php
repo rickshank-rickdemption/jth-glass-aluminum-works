@@ -556,9 +556,6 @@ $terminalStatuses = jthTerminalStatuses();
                             <span id="customer-count" class="text-[10px] text-zinc-600 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-white">0 customers</span>
                         </div>
                     </div>
-                    <div class="hidden sm:flex items-center justify-end">
-                        <span id="retention-status-label" class="text-xs text-zinc-500 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-zinc-50">Retention: checking...</span>
-                    </div>
                 </div>
                 <div class="overflow-auto no-scrollbar">
                     <div class="min-w-[760px]">
@@ -1037,7 +1034,6 @@ $terminalStatuses = jthTerminalStatuses();
             if(viewId === 'kanban') renderKanban();
             if(viewId === 'database') {
                 renderCustomerDB();
-                loadRetentionStatus();
             }
             if(viewId === 'products') renderProductTable();
         }
@@ -1115,7 +1111,6 @@ $terminalStatuses = jthTerminalStatuses();
             bindCustomerHistoryFilters();
             bindAuditFilters();
             updateMobileProductFab('overview');
-            loadRetentionStatus();
             setupModalGuards();
             window.addEventListener('resize', () => {
                 const activeBtn = document.querySelector('#main-nav-mobile [data-view].active, #main-nav [data-view].active');
@@ -3456,48 +3451,10 @@ $terminalStatuses = jthTerminalStatuses();
                     'Retention Purge Complete',
                     `Scanned ${scanned} customer records. Purged ${purged} record(s). Failed: ${failed}.${suffix}`
                 );
-                await loadRetentionStatus();
                 await fetchLatestData({ silent: true });
                 renderCustomerDB();
             } catch (err) {
                 showCustomAlert('error', 'Retention Purge Failed', err.message || 'Unable to run retention cleanup.');
-            }
-        }
-
-        async function loadRetentionStatus() {
-            const label = document.getElementById('retention-status-label');
-            if (!label) return;
-            try {
-                const req = await fetch('backend/retention_cleanup.php', {
-                    method: 'GET',
-                    headers: { 'X-CSRF-Token': CSRF_TOKEN }
-                });
-                const res = await req.json();
-                if (!res || res.status !== 'success') {
-                    label.textContent = 'Retention: unavailable';
-                    return;
-                }
-                const state = (res && typeof res.state === 'object' && res.state) ? res.state : null;
-                if (!state || !state.last_run_at) {
-                    PURGED_CUSTOMER_IDS = new Set();
-                    PURGED_CUSTOMER_NAMES = new Set();
-                    label.textContent = 'Retention: no run yet';
-                    return;
-                }
-                const purgedIds = Array.isArray(state.purged_customer_ids) ? state.purged_customer_ids : [];
-                const purgedNames = Array.isArray(state.purged_customer_names) ? state.purged_customer_names : [];
-                PURGED_CUSTOMER_IDS = new Set(purgedIds.map((v) => String(v || '').trim()).filter(Boolean));
-                PURGED_CUSTOMER_NAMES = new Set(purgedNames.map((v) => String(v || '').trim().toLowerCase()).filter(Boolean));
-                const lastRun = new Date(Number(state.last_run_at) * 1000);
-                const runText = Number.isNaN(lastRun.getTime())
-                    ? 'unknown'
-                    : lastRun.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-                const purged = Number(state.purged_customers || 0);
-                label.textContent = `Retention • Last: ${runText} • Purged: ${purged}`;
-            } catch (_) {
-                PURGED_CUSTOMER_IDS = new Set();
-                PURGED_CUSTOMER_NAMES = new Set();
-                label.textContent = 'Retention: unavailable';
             }
         }
 
