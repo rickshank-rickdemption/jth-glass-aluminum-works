@@ -9,7 +9,93 @@ require_once __DIR__ . '/PHPMailer/src/SMTP.php';
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/logger.php';
 
-function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
+function resolveMailerFromEmail()
+{
+    if (filter_var((string)SMTP_FROM_EMAIL, FILTER_VALIDATE_EMAIL)) {
+        return (string)SMTP_FROM_EMAIL;
+    }
+    if (filter_var((string)SMTP_USER, FILTER_VALIDATE_EMAIL)) {
+        return (string)SMTP_USER;
+    }
+    return '';
+}
+
+function sendEmailViaResendApi($to, $subject, $bodyHTML, $attachments = [])
+{
+    $apiKey = trim((string)RESEND_API_KEY);
+    if ($apiKey === '') {
+        return false;
+    }
+
+    $fromEmail = resolveMailerFromEmail();
+    if ($fromEmail === '') {
+        appLog('error', 'mailer_resend_invalid_from', ['to' => (string)$to]);
+        return false;
+    }
+
+    $payload = [
+        'from' => sprintf('%s <%s>', (string)SMTP_FROM_NAME, $fromEmail),
+        'to' => [(string)$to],
+        'subject' => (string)$subject,
+        'html' => (string)$bodyHTML
+    ];
+
+    $resendAttachments = [];
+    if (is_array($attachments)) {
+        foreach ($attachments as $attachment) {
+            if (!is_array($attachment)) {
+                continue;
+            }
+            $path = (string)($attachment['path'] ?? '');
+            $name = (string)($attachment['name'] ?? basename($path));
+            if ($path === '' || !is_file($path) || !is_readable($path)) {
+                continue;
+            }
+            $raw = file_get_contents($path);
+            if ($raw === false) {
+                continue;
+            }
+            $resendAttachments[] = [
+                'filename' => $name !== '' ? $name : basename($path),
+                'content' => base64_encode($raw)
+            ];
+        }
+    }
+    if (!empty($resendAttachments)) {
+        $payload['attachments'] = $resendAttachments;
+    }
+
+    $ch = curl_init(RESEND_API_URL);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($payload),
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ],
+        CURLOPT_TIMEOUT => max(5, (int)SMTP_TIMEOUT_SECONDS),
+        CURLOPT_CONNECTTIMEOUT => 5
+    ]);
+    $raw = curl_exec($ch);
+    $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $errno = curl_errno($ch);
+    curl_close($ch);
+
+    if ($errno !== 0 || $http < 200 || $http >= 300) {
+        appLog('error', 'mailer_resend_send_failed', [
+            'to' => (string)$to,
+            'subject' => (string)$subject,
+            'http_code' => $http,
+            'curl_errno' => $errno,
+            'response' => is_string($raw) ? substr($raw, 0, 500) : ''
+        ]);
+        return false;
+    }
+    return true;
+}
+
+function sendEmailViaSmtp($to, $subject, $bodyHTML, $attachments = []) {
     $mail = new PHPMailer(true);
     try {
         $mail->SMTPDebug = 0; 
@@ -31,12 +117,7 @@ function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
         $mail->Timeout    = max(5, (int)SMTP_TIMEOUT_SECONDS);
         $mail->SMTPKeepAlive = false;
 
-        $fromEmail = '';
-        if (filter_var((string)SMTP_FROM_EMAIL, FILTER_VALIDATE_EMAIL)) {
-            $fromEmail = (string)SMTP_FROM_EMAIL;
-        } elseif (filter_var((string)SMTP_USER, FILTER_VALIDATE_EMAIL)) {
-            $fromEmail = (string)SMTP_USER;
-        }
+        $fromEmail = resolveMailerFromEmail();
         if ($fromEmail === '') {
             appLog('error', 'mailer_config_invalid_from', ['smtp_user' => (string)SMTP_USER, 'smtp_from_email' => (string)SMTP_FROM_EMAIL]);
             return false;
@@ -73,6 +154,26 @@ function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
         appLog('error', 'mailer_send_failed', ['to' => $to, 'subject' => $subject, 'error' => $mail->ErrorInfo]);
         return false;
     }
+}
+
+function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
+    $transport = strtolower(trim((string)MAIL_TRANSPORT));
+
+    if ($transport === 'resend_api') {
+        return sendEmailViaResendApi($to, $subject, $bodyHTML, $attachments);
+    }
+    if ($transport === 'smtp') {
+        return sendEmailViaSmtp($to, $subject, $bodyHTML, $attachments);
+    }
+
+    if (trim((string)RESEND_API_KEY) !== '') {
+        $ok = sendEmailViaResendApi($to, $subject, $bodyHTML, $attachments);
+        if ($ok) {
+            return true;
+        }
+    }
+
+    return sendEmailViaSmtp($to, $subject, $bodyHTML, $attachments);
 }
 
 function sendSmsReminder($toPhone, $message) {

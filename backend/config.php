@@ -74,6 +74,9 @@ define('SMTP_SECURE', strtolower((string) envValue('SMTP_SECURE', 'tls')));
 define('SMTP_TIMEOUT_SECONDS', (int) envValue('SMTP_TIMEOUT_SECONDS', '12'));
 define('SMTP_FROM_EMAIL', envValue('SMTP_FROM_EMAIL', ''));
 define('SMTP_FROM_NAME', envValue('SMTP_FROM_NAME', 'JTH Glass & Aluminum Works'));
+define('MAIL_TRANSPORT', strtolower((string) envValue('MAIL_TRANSPORT', 'auto'))); // auto|smtp|resend_api
+define('RESEND_API_KEY', envValue('RESEND_API_KEY', ''));
+define('RESEND_API_URL', envValue('RESEND_API_URL', 'https://api.resend.com/emails'));
 define('INQUIRY_RECEIVER_EMAIL', envValue('INQUIRY_RECEIVER_EMAIL', SMTP_USER));
 
 define('ADMIN_USER', envValue('ADMIN_USER', 'admin'));
