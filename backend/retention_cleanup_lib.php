@@ -100,6 +100,44 @@ if (!function_exists('rcAppendBookingHistory')) {
     }
 }
 
+if (!function_exists('rcPurgeCustomerRecord')) {
+    function rcPurgeCustomerRecord($customerId, $customer, $ttlDays, $lastTs)
+    {
+        $customerId = trim((string)$customerId);
+        if ($customerId === '') {
+            return ['ok' => false, 'error' => 'invalid_customer_id'];
+        }
+
+        $name = 'Purged Customer';
+        if (is_array($customer)) {
+            $existingName = trim((string)($customer['name'] ?? ''));
+            if ($existingName !== '') $name = $existingName;
+        }
+
+        $payload = [
+            'name' => $name,
+            'email' => '',
+            'phone' => '',
+            'address' => '',
+            'city' => '',
+            'province' => '',
+            'zip' => '',
+            'consent' => false,
+            'pii_purged' => true,
+            'pii_purged_at' => time(),
+            'retention_ttl_days' => max(1, (int)$ttlDays),
+            'retention_last_activity_ts' => (int)$lastTs
+        ];
+
+        $patchRes = rcFirebaseRequest('PATCH', "customers/" . rawurlencode($customerId) . ".json", $payload);
+        if (($patchRes['http'] ?? 0) < 200 || ($patchRes['http'] ?? 0) >= 300) {
+            return ['ok' => false, 'error' => 'firebase_patch_failed', 'http' => (int)($patchRes['http'] ?? 0), 'data' => $patchRes['data'] ?? null];
+        }
+
+        return ['ok' => true];
+    }
+}
+
 if (!function_exists('rcRunCleanup')) {
     function rcRunCleanup($actor = 'system', $dryRun = false)
     {
@@ -126,6 +164,8 @@ if (!function_exists('rcRunCleanup')) {
         $purged = 0;
         $scanned = 0;
         $entries = [];
+        $purgedIds = [];
+        $failed = [];
 
         foreach ($customers as $customerId => $customer) {
             $scanned++;
@@ -148,7 +188,15 @@ if (!function_exists('rcRunCleanup')) {
                 continue;
             }
 
-            rcFirebaseRequest('DELETE', "customers/" . rawurlencode($customerId) . ".json");
+            $purgeRes = rcPurgeCustomerRecord($customerId, $customer, $ttlDays, $lastTs);
+            if (empty($purgeRes['ok'])) {
+                $failed[] = [
+                    'customer_id' => $customerId,
+                    'reason' => (string)($purgeRes['error'] ?? 'unknown'),
+                    'http' => (int)($purgeRes['http'] ?? 0)
+                ];
+                continue;
+            }
             if (isset($bookingIndex[$customerId]) && is_array($bookingIndex[$customerId]['booking_keys'] ?? null)) {
                 foreach ($bookingIndex[$customerId]['booking_keys'] as $bkKey) {
                     $booking = $bookings[$bkKey] ?? null;
@@ -165,6 +213,7 @@ if (!function_exists('rcRunCleanup')) {
                 'last_activity_ts' => $lastTs,
                 'details' => "Purged customer repository record after {$ttlDays} days retention window."
             ]);
+            $purgedIds[] = $customerId;
             $purged++;
         }
 
@@ -175,7 +224,9 @@ if (!function_exists('rcRunCleanup')) {
             'ttl_days' => $ttlDays,
             'cutoff_ts' => $cutoffTs,
             'scanned_customers' => $scanned,
-            'purged_customers' => $purged
+            'purged_customers' => $purged,
+            'purged_customer_ids' => array_values($purgedIds),
+            'failed_customers' => count($failed)
         ]);
 
         return [
@@ -186,6 +237,9 @@ if (!function_exists('rcRunCleanup')) {
             'cutoff_date' => date('Y-m-d', $cutoffTs),
             'scanned_customers' => $scanned,
             'purged_customers' => $purged,
+            'failed_customers' => count($failed),
+            'failed_items' => $failed,
+            'purged_customer_ids' => array_values($purgedIds),
             'items' => $entries
         ];
     }
