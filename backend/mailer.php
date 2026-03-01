@@ -31,7 +31,17 @@ function sendEmail($to, $subject, $bodyHTML, $attachments = []) {
         $mail->Timeout    = max(5, (int)SMTP_TIMEOUT_SECONDS);
         $mail->SMTPKeepAlive = false;
 
-        $mail->setFrom(SMTP_USER, 'JTH Glass & Aluminum Works');
+        $fromEmail = '';
+        if (filter_var((string)SMTP_FROM_EMAIL, FILTER_VALIDATE_EMAIL)) {
+            $fromEmail = (string)SMTP_FROM_EMAIL;
+        } elseif (filter_var((string)SMTP_USER, FILTER_VALIDATE_EMAIL)) {
+            $fromEmail = (string)SMTP_USER;
+        }
+        if ($fromEmail === '') {
+            appLog('error', 'mailer_config_invalid_from', ['smtp_user' => (string)SMTP_USER, 'smtp_from_email' => (string)SMTP_FROM_EMAIL]);
+            return false;
+        }
+        $mail->setFrom($fromEmail, (string)SMTP_FROM_NAME);
         $mail->addAddress($to); 
 
         $mail->isHTML(true);

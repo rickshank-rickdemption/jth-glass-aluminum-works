@@ -72,6 +72,8 @@ define('SMTP_PASS', envValue('SMTP_PASS', ''));
 define('SMTP_PORT', (int) envValue('SMTP_PORT', '587'));
 define('SMTP_SECURE', strtolower((string) envValue('SMTP_SECURE', 'tls')));
 define('SMTP_TIMEOUT_SECONDS', (int) envValue('SMTP_TIMEOUT_SECONDS', '12'));
+define('SMTP_FROM_EMAIL', envValue('SMTP_FROM_EMAIL', ''));
+define('SMTP_FROM_NAME', envValue('SMTP_FROM_NAME', 'JTH Glass & Aluminum Works'));
 define('INQUIRY_RECEIVER_EMAIL', envValue('INQUIRY_RECEIVER_EMAIL', SMTP_USER));
 
 define('ADMIN_USER', envValue('ADMIN_USER', 'admin'));
