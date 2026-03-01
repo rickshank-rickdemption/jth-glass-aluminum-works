@@ -89,6 +89,18 @@ function makeKey($text)
     return $text !== '' ? $text : '';
 }
 
+function bumpProductsVersion($actor = '')
+{
+    $ts = time();
+    $payload = [
+        'updated_at' => $ts,
+        'actor' => trim((string)$actor),
+        'nonce' => bin2hex(random_bytes(4))
+    ];
+    curlJsonPatch(FIREBASE_URL . "system_settings/products_version.json", $payload);
+    return $ts;
+}
+
 $action = trim((string)($_GET['action'] ?? 'list'));
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 const PRODUCT_TYPES = ['windows', 'doors', 'sliding', 'partitions', 'railings', 'accessories', 'others'];
@@ -246,6 +258,7 @@ if ($method === 'POST' && $action === 'update') {
         'variant_key' => $variantKey,
         'actor' => $adminUser
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'product_key' => $productKey,
@@ -374,6 +387,7 @@ if ($method === 'POST' && $action === 'create') {
         'variant_key' => $variantKey,
         'actor' => $adminUser
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'product_key' => $productKey,
@@ -453,6 +467,7 @@ if ($method === 'POST' && $action === 'seed_import_table_a') {
         'product_type' => $productType,
         'timestamp' => time()
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'change_type' => 'seed_import_table_a',
@@ -524,6 +539,7 @@ if ($method === 'POST' && $action === 'seed_import_all_known') {
         'actor' => $adminUser,
         'timestamp' => time()
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'change_type' => 'seed_import_all_known',
@@ -618,6 +634,7 @@ if ($method === 'POST' && $action === 'bulk_set_type') {
         'actor' => $adminUser,
         'timestamp' => $nowTs
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'change_type' => 'bulk_set_type',
@@ -699,6 +716,7 @@ if ($method === 'POST' && $action === 'delete') {
         'variant_key' => $variantKey,
         'actor' => $adminUser
     ]);
+    bumpProductsVersion($adminUser);
 
     pushRealtimeEvent('product_price_updated', [
         'product_key' => $productKey,

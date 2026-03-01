@@ -1829,6 +1829,8 @@
         let listenersBound = false;
         let productsWs = null;
         let productsWsReconnectTimer = null;
+        let productsVersionPollTimer = null;
+        let productsVersionSeen = 0;
         const PRODUCTS_WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:8081`;
 
         async function fetchProductsWsToken() {
@@ -2013,6 +2015,33 @@
             }, 3000);
         }
 
+        async function fetchProductsVersion() {
+            try {
+                const json = await fetchJsonWithTimeout('backend/products_version.php', 3500);
+                if (!json || json.status !== 'success') return 0;
+                return Number(json.updated_at || 0);
+            } catch (_) {
+                return 0;
+            }
+        }
+
+        function startProductsVersionPolling() {
+            if (productsVersionPollTimer) return;
+            productsVersionPollTimer = setInterval(async () => {
+                const latest = await fetchProductsVersion();
+                if (!latest) return;
+                if (!productsVersionSeen) {
+                    productsVersionSeen = latest;
+                    return;
+                }
+                if (latest > productsVersionSeen) {
+                    productsVersionSeen = latest;
+                    localStorage.removeItem(PRODUCTS_CACHE_KEY);
+                    await refreshEstimatorProductsRealtime();
+                }
+            }, 7000);
+        }
+
         async function startProductsRealtimeSync() {
             if (productsWs && (productsWs.readyState === WebSocket.OPEN || productsWs.readyState === WebSocket.CONNECTING)) {
                 return;
@@ -2033,6 +2062,7 @@
                     if (!payload || payload.type !== 'product_price_updated') return;
                     localStorage.removeItem(PRODUCTS_CACHE_KEY);
                     await refreshEstimatorProductsRealtime();
+                    productsVersionSeen = Math.max(productsVersionSeen, Math.floor(Date.now() / 1000));
                 } catch (_) {
                 }
             });
@@ -2072,14 +2102,18 @@
                     listenersBound = true;
                 }
                 hideProductOverlay();
+                productsVersionSeen = await fetchProductsVersion();
                 startProductsRealtimeSync();
+                startProductsVersionPolling();
             } catch (err) {
                 console.error("Failed to load products", err);
                 if (!PRODUCT_DB || Object.keys(PRODUCT_DB).length === 0) {
                     document.querySelector('#loading-overlay span').textContent = "Product sync failed. Please refresh.";
                 } else {
                     hideProductOverlay();
+                    productsVersionSeen = await fetchProductsVersion();
                     startProductsRealtimeSync();
+                    startProductsVersionPolling();
                 }
             }
         });

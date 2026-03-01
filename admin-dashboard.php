@@ -108,6 +108,24 @@ $terminalStatuses = jthTerminalStatuses();
         }
         .fc-button-primary:focus { box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.1) !important; }
         .fc-button-active { background-color: #18181B !important; color: #FFFFFF !important; border-color: #18181B !important; }
+        .fc .fc-prev-button,
+        .fc .fc-next-button,
+        .fc .fc-today-button {
+            background-color: #FFFFFF !important;
+            border-color: #D4D4D8 !important;
+            color: #18181B !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+            transform: none !important;
+        }
+        .fc .fc-prev-button:hover,
+        .fc .fc-next-button:hover,
+        .fc .fc-today-button:hover {
+            background-color: #F4F4F5 !important;
+            border-color: #A1A1AA !important;
+            color: #18181B !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+            transform: none !important;
+        }
         
         .fc-event { border: none !important; border-radius: 8px; padding: 3px 7px; font-size: 0.7rem; font-weight: 600; margin-bottom: 2px !important; transition: transform .18s ease, opacity .18s ease; }
         .fc-daygrid-day { transition: background-color 0.15s ease; }
@@ -926,6 +944,26 @@ $terminalStatuses = jthTerminalStatuses();
             </div>
         </div>
     </div>
+
+    <div id="product-delete-selected-modal" class="modal-overlay" onclick="handleProductDeleteSelectedBackdrop(event)">
+        <div class="modal-content" style="max-width: 430px;" onclick="event.stopPropagation()">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mb-4 mx-auto">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 9v4"></path>
+                        <path d="M12 17h.01"></path>
+                        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-base font-semibold text-zinc-900 text-center mb-1">Delete <span id="pdsm-count">0</span> selected variant(s)?</h3>
+                <p class="text-xs text-zinc-500 text-center mb-6">This action cannot be undone.</p>
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button" onclick="resolveProductDeleteSelectedModal(false)" class="h-9 px-4 rounded-md border border-zinc-300 bg-white text-zinc-700 text-xs font-semibold hover:bg-zinc-50 transition">Cancel</button>
+                    <button type="button" onclick="resolveProductDeleteSelectedModal(true)" class="h-9 px-4 rounded-md bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition">Delete Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script>
         const CSRF_TOKEN = '<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, "UTF-8"); ?>';
@@ -958,6 +996,7 @@ $terminalStatuses = jthTerminalStatuses();
         let PRODUCT_TYPE_FILTER = 'all';
         let ACTIVE_PRODUCT_ITEM = null;
         let SELECTED_PRODUCT_KEYS = new Set();
+        let PRODUCT_DELETE_SELECTED_RESOLVER = null;
         let LOGIN_ALERTS = [];
         let calendar;
         let wsClient = null;
@@ -2542,25 +2581,8 @@ $terminalStatuses = jthTerminalStatuses();
                 showCustomAlert('error', 'No Selection', 'Select at least one variant first.');
                 return;
             }
-
-            const confirmDelete = await Swal.fire({
-                title: `Delete ${selected.length} selected variant(s)?`,
-                text: 'This action cannot be undone.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Delete Selected',
-                cancelButtonText: 'Cancel',
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'rounded-xl border border-zinc-200 shadow-2xl p-0',
-                    title: 'text-left text-lg font-semibold text-zinc-900 px-6 pt-6 pb-0',
-                    htmlContainer: 'px-6 py-3',
-                    actions: 'px-6 pb-6',
-                    confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-md text-xs font-semibold hover:bg-red-700 transition',
-                    cancelButton: 'bg-white text-zinc-700 border border-zinc-300 px-4 py-2 rounded-md text-xs font-semibold hover:bg-zinc-50 transition mr-2'
-                }
-            });
-            if (!confirmDelete.isConfirmed) return;
+            const confirmed = await openProductDeleteSelectedModal(selected.length);
+            if (!confirmed) return;
 
             let successCount = 0;
             let failCount = 0;
@@ -2598,6 +2620,37 @@ $terminalStatuses = jthTerminalStatuses();
             await fetchProductData();
             clearProductSelection();
             showCustomAlert('success', 'Delete Complete', `Deleted: ${successCount}, Failed: ${failCount}`);
+        }
+
+        function openProductDeleteSelectedModal(selectedCount) {
+            const modal = document.getElementById('product-delete-selected-modal');
+            const countEl = document.getElementById('pdsm-count');
+            if (!modal || !countEl) {
+                return Promise.resolve(false);
+            }
+            countEl.textContent = String(Math.max(0, Number(selectedCount) || 0));
+            modal.classList.add('open');
+            return new Promise((resolve) => {
+                PRODUCT_DELETE_SELECTED_RESOLVER = resolve;
+            });
+        }
+
+        function resolveProductDeleteSelectedModal(confirmed) {
+            const modal = document.getElementById('product-delete-selected-modal');
+            if (modal) {
+                modal.classList.remove('open');
+            }
+            if (typeof PRODUCT_DELETE_SELECTED_RESOLVER === 'function') {
+                const done = PRODUCT_DELETE_SELECTED_RESOLVER;
+                PRODUCT_DELETE_SELECTED_RESOLVER = null;
+                done(Boolean(confirmed));
+            }
+        }
+
+        function handleProductDeleteSelectedBackdrop(evt) {
+            if (evt && evt.target === evt.currentTarget) {
+                resolveProductDeleteSelectedModal(false);
+            }
         }
 
         function renderProductTable() {
