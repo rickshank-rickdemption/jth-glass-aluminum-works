@@ -107,7 +107,12 @@ $terminalStatuses = jthTerminalStatuses();
             transform: translateY(-1px);
         }
         .fc-button-primary:focus { box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.1) !important; }
-        .fc-button-active { background-color: #18181B !important; color: #FFFFFF !important; border-color: #18181B !important; }
+        .fc-button-active {
+            background-color: #F4F4F5 !important;
+            color: #18181B !important;
+            border-color: #A1A1AA !important;
+            box-shadow: inset 0 0 0 1px rgba(24, 24, 27, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
         .fc .fc-prev-button,
         .fc .fc-next-button,
         .fc .fc-today-button {
