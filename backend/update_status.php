@@ -198,8 +198,39 @@ $ch = curl_init($updateUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updates));
+$updateHttpHeaders = ['Content-Type: application/json'];
+curl_setopt($ch, CURLOPT_HTTPHEADER, $updateHttpHeaders);
+$updateErrNo = 0;
+$updateHttp = 0;
 $result = curl_exec($ch);
+$updateErrNo = curl_errno($ch);
+$updateHttp = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
+
+if ($updateErrNo !== 0 || $result === false || $result === '') {
+    http_response_code(503);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Status update failed. Please retry.',
+        'reason' => 'firebase_unreachable'
+    ]);
+    exit;
+}
+
+$updateDecoded = json_decode($result, true);
+if ($updateHttp >= 400 || (is_array($updateDecoded) && isset($updateDecoded['error']))) {
+    $firebaseMessage = is_array($updateDecoded) && isset($updateDecoded['error'])
+        ? (is_string($updateDecoded['error']) ? $updateDecoded['error'] : 'Permission denied')
+        : ('HTTP ' . $updateHttp);
+    http_response_code(400);
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Status update rejected by database rules.',
+        'reason' => 'firebase_rejected',
+        'details' => $firebaseMessage
+    ]);
+    exit;
+}
 
 $recipientEmail = $bookingData['email'] ?? null;
 $customerName   = $bookingData['customer_name_snapshot'] ?? $bookingData['customer'] ?? 'Customer';
