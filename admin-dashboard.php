@@ -3412,7 +3412,10 @@ $terminalStatuses = jthTerminalStatuses();
                     showCustomAlert('success', 'Status Updated', `Booking moved to ${newStatus}.`);
                     await fetchLatestData(); 
                 } else {
-                    throw new Error(res.message);
+                    const details = (res && typeof res.details === 'string' && res.details.trim() !== '')
+                        ? ` (${res.details.trim()})`
+                        : '';
+                    throw new Error(String(res.message || 'Update failed.') + details);
                 }
             } catch (err) {
                 showCustomAlert('error', 'Update Failed', err.message);
