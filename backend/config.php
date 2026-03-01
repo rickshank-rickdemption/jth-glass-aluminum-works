@@ -72,6 +72,7 @@ define('SMTP_PASS', envValue('SMTP_PASS', ''));
 define('SMTP_PORT', (int) envValue('SMTP_PORT', '587'));
 define('SMTP_SECURE', strtolower((string) envValue('SMTP_SECURE', 'tls')));
 define('SMTP_TIMEOUT_SECONDS', (int) envValue('SMTP_TIMEOUT_SECONDS', '12'));
+define('INQUIRY_RECEIVER_EMAIL', envValue('INQUIRY_RECEIVER_EMAIL', SMTP_USER));
 
 define('ADMIN_USER', envValue('ADMIN_USER', 'admin'));
 define('ADMIN_PASS', envValue('ADMIN_PASS', ''));
@@ -131,6 +132,7 @@ define('RETENTION_ENABLED', envBool('RETENTION_ENABLED', true));
 define('RETENTION_CUSTOMER_PII_DAYS', (int) envValue('RETENTION_CUSTOMER_PII_DAYS', '365')); // ~12 months
 define('RETENTION_AUTO_INTERVAL_SECONDS', (int) envValue('RETENTION_AUTO_INTERVAL_SECONDS', '86400')); // daily
 define('RETENTION_CRON_TOKEN', envValue('RETENTION_CRON_TOKEN', ''));
+define('EMAIL_QUEUE_AUTOPROCESS_ON_ADMIN_FETCH', envBool('EMAIL_QUEUE_AUTOPROCESS_ON_ADMIN_FETCH', false));
 
 ini_set('display_errors', 0); // Hide errors from output
 ini_set('log_errors', 1);     // Log them to file instead

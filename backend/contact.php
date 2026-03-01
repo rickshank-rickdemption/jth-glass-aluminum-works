@@ -394,7 +394,9 @@ if (!empty($_SESSION[$cooldownKey]) && ($now - $_SESSION[$cooldownKey]) < COOLDO
     exit;
 }
 
-$adminEmail = defined('SMTP_USER') ? SMTP_USER : 'admin@example.com';
+$adminEmail = defined('INQUIRY_RECEIVER_EMAIL') && filter_var((string)INQUIRY_RECEIVER_EMAIL, FILTER_VALIDATE_EMAIL)
+    ? INQUIRY_RECEIVER_EMAIL
+    : (defined('SMTP_USER') ? SMTP_USER : 'admin@example.com');
 $subject = "Inquiry: $fname $lname";
 $currentDate = date("F j, Y, g:i a") . " PHT";
 $phoneDisplay = $phone !== '' ? $phone : 'N/A';
