@@ -551,8 +551,8 @@ $terminalStatuses = jthTerminalStatuses();
             <h2 class="text-lg font-bold mb-6">Customers</h2>
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-border space-y-3">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="relative w-full max-w-[280px]">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="relative hidden sm:block flex-1 min-w-0 sm:max-w-[320px]">
                             <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
@@ -564,10 +564,12 @@ $terminalStatuses = jthTerminalStatuses();
                                 class="pl-8 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-lg w-full focus:outline-none focus:border-primary transition"
                             >
                         </div>
-                        <div class="flex flex-wrap items-center justify-end gap-2">
-                            <span id="retention-status-label" class="text-xs text-zinc-500 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-zinc-50">Retention: checking...</span>
+                        <div class="flex items-center justify-start sm:justify-end gap-2 shrink-0 w-full sm:w-auto">
                             <span id="customer-count" class="text-[10px] text-zinc-600 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-white">0 customers</span>
                         </div>
+                    </div>
+                    <div class="hidden sm:flex items-center justify-end">
+                        <span id="retention-status-label" class="text-xs text-zinc-500 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-zinc-50">Retention: checking...</span>
                     </div>
                 </div>
                 <div class="overflow-auto no-scrollbar">
@@ -581,7 +583,7 @@ $terminalStatuses = jthTerminalStatuses();
                         <div id="customer-list" class="divide-y divide-zinc-100"></div>
                     </div>
                 </div>
-                <div id="customer-pagination" class="px-6 py-3 border-t border-border bg-white flex items-center justify-between text-xs"></div>
+                <div id="customer-pagination" class="px-4 sm:px-6 py-3 border-t border-border bg-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs"></div>
             </div>
         </div>
 
@@ -2231,13 +2233,9 @@ $terminalStatuses = jthTerminalStatuses();
             };
 
             if (totalPages <= 1) {
-                const leftSimple = document.createElement('span');
-                leftSimple.className = 'text-[10px] text-zinc-400';
-                leftSimple.textContent = 'Page 1 of 1';
                 const rightSimple = document.createElement('div');
-                rightSimple.className = 'flex items-center';
+                rightSimple.className = 'flex items-center justify-end';
                 rightSimple.appendChild(makeRetentionButton());
-                container.appendChild(leftSimple);
                 container.appendChild(rightSimple);
                 return;
             }
@@ -2283,16 +2281,12 @@ $terminalStatuses = jthTerminalStatuses();
             }
 
             const left = document.createElement('div');
-            left.className = 'flex items-center gap-2';
+            left.className = 'flex flex-wrap items-center gap-2';
             left.appendChild(prevBtn);
             left.appendChild(pagesWrap);
 
-            const right = document.createElement('span');
-            right.className = 'flex items-center gap-2';
-            const rightInfo = document.createElement('span');
-            rightInfo.className = 'text-[10px] text-zinc-400';
-            rightInfo.textContent = `Page ${CUSTOMER_PAGE} of ${totalPages}`;
-            right.appendChild(rightInfo);
+            const right = document.createElement('div');
+            right.className = 'flex w-full sm:w-auto items-center justify-between sm:justify-end gap-2';
             right.appendChild(makeRetentionButton());
 
             container.appendChild(left);

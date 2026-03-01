@@ -1006,9 +1006,11 @@ if ($method === 'GET') {
     } catch (Throwable $e) {
     }
 
-    try {
-        efbProcessQueue(3);
-    } catch (Throwable $e) {
+    if (EMAIL_QUEUE_AUTOPROCESS_ON_ADMIN_FETCH) {
+        try {
+            efbProcessQueue(1);
+        } catch (Throwable $e) {
+        }
     }
 
     $ch = curl_init(FIREBASE_URL . "bookings.json");
