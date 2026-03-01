@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Setup | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-white p-4 flex items-center justify-center">
+    <div class="w-full max-w-[460px] space-y-5">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-zinc-900">Admin Recovery Setup</h1>
+            <p class="text-sm text-zinc-500 mt-2">Configure authenticator + one-time recovery code.</p>
+        </div>
+
+        <div class="border border-zinc-200 rounded-xl p-5 shadow-sm bg-white space-y-4">
+            <div>
+                <label class="text-xs font-semibold text-zinc-600 uppercase tracking-wide">Current Password</label>
+                <input id="currentPassword" type="password" class="mt-1 w-full border border-zinc-200 rounded-md px-3 py-2 text-sm outline-none focus:border-zinc-900" required>
+            </div>
+            <button id="btn-begin" class="w-full bg-zinc-900 text-white rounded-md py-2.5 text-sm font-semibold hover:bg-zinc-800 transition">Generate Setup</button>
+            <p id="setupError" class="text-xs text-red-600 hidden"></p>
+        </div>
+
+        <div id="step2" class="hidden border border-zinc-200 rounded-xl p-5 shadow-sm bg-white space-y-4">
+            <div>
+                <div class="text-xs font-semibold text-zinc-600 uppercase tracking-wide">1. Scan QR</div>
+                <img id="qr" alt="TOTP QR" class="mt-2 border border-zinc-200 rounded-md w-44 h-44 object-contain">
+                <p class="text-xs text-zinc-500 mt-2">If QR fails, use this secret:</p>
+                <code id="secretText" class="block text-xs bg-zinc-100 rounded p-2 mt-1 break-all"></code>
+            </div>
+            <div>
+                <div class="text-xs font-semibold text-zinc-600 uppercase tracking-wide">2. Enter Authenticator Code</div>
+                <input id="totpCode" type="text" maxlength="6" placeholder="123456" class="mt-1 w-full border border-zinc-200 rounded-md px-3 py-2 text-sm outline-none focus:border-zinc-900">
+            </div>
+            <button id="btn-confirm" class="w-full bg-zinc-900 text-white rounded-md py-2.5 text-sm font-semibold hover:bg-zinc-800 transition">Confirm Setup</button>
+            <p id="confirmError" class="text-xs text-red-600 hidden"></p>
+        </div>
+
+        <div id="done" class="hidden border border-emerald-200 bg-emerald-50 rounded-xl p-5 space-y-3">
+            <div class="text-sm font-semibold text-emerald-800">Setup complete</div>
+            <p class="text-xs text-emerald-900">Save this recovery code offline. It is shown only once.</p>
+            <code id="recoveryCode" class="block text-sm font-bold bg-white border border-emerald-200 rounded p-2"></code>
+            <button id="btn-dashboard" class="w-full bg-zinc-900 text-white rounded-md py-2.5 text-sm font-semibold hover:bg-zinc-800 transition">Continue to Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        let CSRF_TOKEN = '';
+        let OTP_URI = '';
+
+        async function getCsrf() {
+            if (CSRF_TOKEN) return CSRF_TOKEN;
+            const res = await fetch('backend/auth.php?action=csrf');
+            const json = await res.json();
+            if (!res.ok || json.status !== 'success' || !json.csrf_token) {
+                throw new Error(json.message || 'Session expired. Please login again.');
+            }
+            CSRF_TOKEN = json.csrf_token;
+            return CSRF_TOKEN;
+        }
+
+        const setupError = document.getElementById('setupError');
+        const confirmError = document.getElementById('confirmError');
+
+        function showErr(el, msg) {
+            el.textContent = msg || 'Action failed.';
+            el.classList.remove('hidden');
+        }
+
+        function hideErr(el) {
+            el.textContent = '';
+            el.classList.add('hidden');
+        }
+
+        document.getElementById('btn-begin').addEventListener('click', async () => {
+            hideErr(setupError);
+            const currentPassword = document.getElementById('currentPassword').value;
+            if (!currentPassword) {
+                showErr(setupError, 'Current password is required.');
+                return;
+            }
+            try {
+                const csrf = await getCsrf();
+                const res = await fetch('backend/auth.php?action=recovery_setup_begin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrf
+                    },
+                    body: JSON.stringify({ current_password: currentPassword })
+                });
+                const json = await res.json();
+                if (!res.ok || json.status !== 'success') {
+                    throw new Error(json.message || 'Unable to start setup.');
+                }
+                OTP_URI = String(json.otpauth_uri || '');
+                document.getElementById('secretText').textContent = json.secret || '';
+                document.getElementById('qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(OTP_URI)}`;
+                document.getElementById('step2').classList.remove('hidden');
+            } catch (err) {
+                showErr(setupError, err.message || 'Unable to start setup.');
+            }
+        });
+
+        document.getElementById('btn-confirm').addEventListener('click', async () => {
+            hideErr(confirmError);
+            const totpCode = String(document.getElementById('totpCode').value || '').replace(/\D+/g, '');
+            if (totpCode.length !== 6) {
+                showErr(confirmError, 'Enter a valid 6-digit code.');
+                return;
+            }
+            try {
+                const csrf = await getCsrf();
+                const res = await fetch('backend/auth.php?action=recovery_setup_confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrf
+                    },
+                    body: JSON.stringify({ totp_code: totpCode })
+                });
+                const json = await res.json();
+                if (!res.ok || json.status !== 'success') {
+                    throw new Error(json.message || 'Setup confirmation failed.');
+                }
+                document.getElementById('recoveryCode').textContent = json.recovery_code || '';
+                document.getElementById('done').classList.remove('hidden');
+            } catch (err) {
+                showErr(confirmError, err.message || 'Setup confirmation failed.');
+            }
+        });
+
+        document.getElementById('btn-dashboard').addEventListener('click', () => {
+            window.location.href = 'admin-dashboard.php';
+        });
+
+        getCsrf().catch((err) => {
+            showErr(setupError, err.message || 'Session expired. Please login again.');
+        });
+    </script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>
+

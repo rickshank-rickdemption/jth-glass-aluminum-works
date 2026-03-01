@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | JTH Glass & Aluminum</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-light: #FFFFFF; 
+            --bg-dark: #111111;
+            --text-dark: #111111;
+        }
+        @media (max-width: 900px) {
+        }
+        html { scroll-behavior: smooth; }
+
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        body::-webkit-scrollbar { display: none !important; width: 0 !important; background: transparent !important; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            opacity: 1 !important;
+            visibility: visible !important;
+            -webkit-font-smoothing: antialiased;
+            transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(0);
+        }
+        body.page-enter,
+        body.page-leave {
+            opacity: 0 !important;
+            transform: translateY(8px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body { transition: none; }
+        }
+
+        .nav-link {
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .nav-link:hover { color: #9CA3AF; }
+        .nav-link.active { color: #9CA3AF; font-weight: 400; }
+
+        .dxt-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            height: 84px;
+            display: grid;
+            grid-template-columns: 1.25fr repeat(5, 1fr) 1.05fr;
+            border-bottom: 1px solid #D3D6DE;
+            background: var(--bg-light);
+        }
+        .dxt-nav.scrolled { box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08); }
+        .dxt-nav-cell {
+            border-right: 1px solid #D9DCE4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+        .dxt-nav > .dxt-nav-cell:last-child {
+            border-right: 0;
+        }
+        .dxt-nav-cell.logo {
+            justify-content: flex-start;
+            padding-left: 20px;
+            line-height: 1;
+        }
+        .dxt-logo-img {
+            width: 124px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0);
+        }
+        .dxt-nav-link {
+            font-size: 34px;
+            letter-spacing: 0.01em;
+            color: #1F2937;
+            text-transform: uppercase;
+            transition: color .5s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .dxt-nav-link::before,
+        .dxt-nav-link::after {
+            content: "";
+            position: absolute;
+            height: 50%;
+            width: 0;
+            background-color: #000000;
+            transition: width .5s ease;
+            z-index: -1;
+        }
+        .dxt-nav-link::before { right: 0; top: 0; }
+        .dxt-nav-link::after { left: 0; bottom: 0; }
+        .dxt-nav-link:hover { color: #FFFFFF; }
+        .dxt-nav-link:hover::before,
+        .dxt-nav-link:hover::after { width: 100%; }
+        .dxt-nav-link.active {
+            color: #FFFFFF;
+        }
+        .dxt-nav-link.active::before,
+        .dxt-nav-link.active::after {
+            width: 100%;
+        }
+        .dxt-nav-talk {
+            background: #111111;
+            color: #fff;
+            font-size: 34px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            font-weight: 500;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            transition: background .2s ease;
+        }
+        .dxt-nav-talk:hover { background: #000000; }
+        .dxt-mobile-toggle,
+        .dxt-mobile-panel {
+            display: none;
+        }
+        .dxt-menu-btn {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+        }
+        .dxt-menu-icon {
+            width: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dxt-menu-icon span {
+            display: block;
+            height: 2px;
+            background: #111111;
+            border-radius: 999px;
+        }
+        .dxt-mobile-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            background-color: #000000;
+            background-image: repeating-linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.10) 0 1px,
+                transparent 1px 120px
+            );
+            color: #ffffff;
+            padding: 14px 16px 18px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.4s;
+        }
+        .dxt-mobile-panel.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+        }
+        .dxt-mobile-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .dxt-mobile-brand {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .dxt-mobile-logo-img {
+            width: 96px;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0) invert(1);
+        }
+        .dxt-mobile-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+        .dxt-mobile-close::before,
+        .dxt-mobile-close::after {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 16px;
+            width: 20px;
+            height: 2px;
+            background: #ffffff;
+        }
+        .dxt-mobile-close::before { transform: rotate(45deg); }
+        .dxt-mobile-close::after { transform: rotate(-45deg); }
+        .dxt-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dxt-mobile-link {
+            display: grid;
+            gap: 3px;
+            color: #ffffff;
+            padding: 6px 0;
+            text-transform: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .dxt-mobile-panel.open .dxt-mobile-link {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: calc(var(--i, 1) * 32ms);
+        }
+        .dxt-mobile-idx {
+            font-size: 12px;
+            opacity: 0.65;
+            letter-spacing: 0.06em;
+            line-height: 1;
+        }
+        .dxt-mobile-txt {
+            font-size: 46px;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+        .dxt-mobile-link.talk-link { margin-top: 6px; }
+        @media (max-width: 1280px) {
+            .dxt-nav { height: 74px; grid-template-columns: 1.3fr repeat(3, 1fr) 1.05fr; }
+            .dxt-nav-cell.hide-lg { display: none; }
+            .dxt-nav-cell.logo { font-size: 34px; }
+            .dxt-nav-link, .dxt-nav-talk { font-size: 24px; }
+        }
+        @media (max-width: 900px) {
+            .dxt-nav { height: 64px; grid-template-columns: 1fr 104px 120px; }
+            .dxt-nav-cell.menu-cell { display: none; }
+            .dxt-nav-cell.logo { border-right: 1px solid #D9DCE4; }
+            .dxt-logo-img { width: 92px; }
+            .dxt-mobile-toggle { display: flex; }
+            .dxt-mobile-panel { display: block; }
+            .dxt-mobile-txt { font-size: clamp(34px, 8.5vw, 52px); }
+            .dxt-nav-talk {
+                font-size: 0;
+                padding: 0;
+                position: relative;
+            }
+            .dxt-nav-talk::before {
+                content: "";
+                width: 20px;
+                height: 16px;
+                border: 2px solid #FFFFFF;
+                border-radius: 3px;
+                position: absolute;
+            }
+            .dxt-nav-talk::after {
+                content: "";
+                position: absolute;
+                width: 7px;
+                height: 7px;
+                border-left: 2px solid #FFFFFF;
+                border-bottom: 2px solid #FFFFFF;
+                transform: rotate(-45deg);
+                margin-top: 12px;
+                margin-left: -8px;
+            }
+        }
+
+            position: fixed; inset: 0; background: #fff; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .story-heading {
+            font-size: clamp(3.5rem, 7vw, 8rem);
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .story-subnav {
+            font-size: clamp(1rem, 2vw, 2.5rem);
+            font-weight: 300;
+            color: #9ca3af;
+            transition: color 0.3s;
+        }
+        .story-subnav.active { color: #111; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .news-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; }
+        .news-card {
+            grid-column: span 12;
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+            background: #FFFFFF;
+            padding: 1.1rem 1.1rem 1rem;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+        }
+        .news-card:hover {
+            transform: translateY(-3px);
+            border-color: #D1D5DB;
+            box-shadow: 0 14px 30px -20px rgba(0,0,0,0.30);
+        }
+        .news-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .7rem;
+            margin-bottom: .65rem;
+        }
+        .news-date {
+            font-size: .72rem;
+            color: #6B7280;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+        .news-tag {
+            font-size: .64rem;
+            color: #374151;
+            border: 1px solid #E5E7EB;
+            border-radius: 999px;
+            padding: .22rem .55rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            background: #F9FAFB;
+        }
+        .news-title { font-size: clamp(1.05rem, 1.8vw, 1.35rem); color: #111; margin-bottom: .45rem; }
+        .news-body { font-size: .93rem; color: #4B5563; line-height: 1.58; }
+        @media (min-width: 1024px) {
+            .news-card.span-6 { grid-column: span 6; }
+            .news-card.span-4 { grid-column: span 4; }
+            .news-card.span-8 { grid-column: span 8; }
+        }
+
+        .content-lead {
+            font-size: clamp(1.8rem, 3vw, 3.5rem);
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .quote-text {
+            font-size: clamp(1.5rem, 3vw, 3.2rem);
+            font-weight: 300;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            text-align: center;
+        }
+
+        .btn-outline {
+            border: 1px solid #111;
+            padding: 12px 32px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: transparent;
+            color: #111;
+        }
+        .btn-outline:hover { background: #111; color: white; }
+
+        .black-dot {
+            width: 24px; height: 24px;
+            background-color: black;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .word-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
+        .word-inner { display: inline-block; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <!-- LOADER -->
+    <div id="loader"><div class="text-xs tracking-widest uppercase font-bold">JTH SYSTEMS LOADING...</div></div>
+
+    <!-- NAVBAR -->
+    <nav id="main-nav" class="dxt-nav">
+        <div class="dxt-nav-cell logo">
+            <a href="index.html" class="leading-none" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-logo-img">
+            </a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="index.html" class="dxt-nav-link">Home</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="about.html" class="dxt-nav-link active">About</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="index.html#process" class="dxt-nav-link">Process</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="products.html" class="dxt-nav-link">Catalog</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="index.html#estimator" class="dxt-nav-link">Estimate</a>
+        </div>
+        <div class="dxt-nav-cell dxt-mobile-toggle">
+            <button id="dxt-menu-btn" class="dxt-menu-btn" aria-label="Open menu" aria-expanded="false">
+                <span class="dxt-menu-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+        </div>
+        <div class="dxt-nav-cell">
+            <a href="#site-footer" class="dxt-nav-talk">Let's Talk</a>
+        </div>
+    </nav>
+    <div id="dxt-mobile-panel" class="dxt-mobile-panel">
+        <div class="dxt-mobile-head">
+            <a href="index.html" class="dxt-mobile-brand" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-mobile-logo-img">
+            </a>
+            <button id="dxt-menu-close" class="dxt-mobile-close" aria-label="Close menu"></button>
+        </div>
+        <div class="dxt-mobile-links">
+            <a href="index.html" class="dxt-mobile-link" style="--i: 1"><span class="dxt-mobile-idx">001</span><span class="dxt-mobile-txt">Home</span></a>
+            <a href="about.html" class="dxt-mobile-link" style="--i: 2"><span class="dxt-mobile-idx">002</span><span class="dxt-mobile-txt">About Us</span></a>
+            <a href="index.html#process" class="dxt-mobile-link" style="--i: 3"><span class="dxt-mobile-idx">003</span><span class="dxt-mobile-txt">Process</span></a>
+            <a href="products.html" class="dxt-mobile-link" style="--i: 4"><span class="dxt-mobile-idx">004</span><span class="dxt-mobile-txt">Products</span></a>
+            <a href="products.html#catalog" class="dxt-mobile-link" style="--i: 5"><span class="dxt-mobile-idx">005</span><span class="dxt-mobile-txt">Catalog</span></a>
+            <a href="index.html#estimator" class="dxt-mobile-link" style="--i: 6"><span class="dxt-mobile-idx">006</span><span class="dxt-mobile-txt">Estimate</span></a>
+            <a href="#site-footer" class="dxt-mobile-link talk-link" style="--i: 7"><span class="dxt-mobile-idx">007</span><span class="dxt-mobile-txt">Let's Talk</span></a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="pt-32 pb-20 px-6 md:px-12 max-w-[1600px] mx-auto">
+        
+        <!-- 1. HEADER SECTION (Our Story) -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
+            <div class="lg:col-span-7">
+                <h1 class="story-heading text-split-anim mb-16">Our story</h1>
+                
+                <!-- Sub Navigation -->
+                <div class="flex flex-wrap gap-8 md:gap-12 reveal-item">
+                    <a href="#" class="story-subnav active" data-tab="story">Our story</a>
+                    <a href="#" class="story-subnav hover:text-black" data-tab="news">Latest news</a>
+                </div>
+            </div>
+
+            <!-- Right Side Intro -->
+            <div class="lg:col-span-5 flex flex-col justify-between items-end text-right">
+                <div class="max-w-md reveal-item">
+                    <h3 class="text-xl md:text-2xl font-normal mb-4">Built from the ground up.</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">
+                        We focus on practical, quality glass and aluminum work delivered with care, consistency, and respect for each client’s needs.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div id="tab-story" class="tab-panel active">
+            <!-- 2. NARRATIVE SECTION -->
+            <section class="border-t border-black/10 pt-16 lg:pt-24 mb-24">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    <!-- Left Column: Big Lead Text -->
+                    <div class="lg:col-span-7 pr-0 lg:pr-12">
+                        <p class="content-lead text-split-scroll">
+                            JTH Glass and Aluminum Works was established in 2024 and continues to grow one project at a time.
+                        </p>
+                    </div>
+
+                    <!-- Right Column: Body Text -->
+                    <div class="lg:col-span-5 flex flex-col justify-end">
+                        <div class="text-gray-500 font-light text-lg leading-relaxed space-y-8 text-fade-scroll">
+                            <p>
+                                We serve residential and commercial clients with custom glass and aluminum solutions based on clear communication, proper measurement, and careful execution.
+                            </p>
+                            <p>
+                               As a young business, we are still building our track record. Our goal is simple: do honest work, improve continuously, and earn long-term trust through reliable service.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. TEAM IMAGE -->
+            <section class="mb-32 reveal-scale">
+                <div class="w-full h-[60vh] md:h-[80vh] overflow-hidden rounded-lg bg-gray-200 relative">
+                    <!-- Team Image from prompt -->
+                    <img src="https://images.unsplash.com/photo-1757366346763-c7577df837b0?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="w-full h-full object-cover grayscale" alt="JTH Team">
+                </div>
+            </section>
+
+            <!-- 4. QUOTE SECTION WITH OWNER IMAGE -->
+            <section class="max-w-5xl mx-auto mb-32 relative flex flex-col items-center">
+                <blockquote class="quote-text mb-10 text-split-scroll text-center">
+                   “What I aim to create is more than just glass and aluminum work. I put care, dedication, and craftsmanship into every project so my clients can feel the quality and thought behind every detail.”
+                </blockquote>
+                
+                <!-- Owner Image: Centered, Circular, Grayscale -->
+                <div class="mb-6 text-fade-scroll group relative">
+                    <!-- Using a professional placeholder since no specific owner file was provided. Replace src with actual file if available. -->
+                    <img src="https://static.wixstatic.com/media/d897d1_3cf70d89937745079ef15120de94d08d~mv2.jpg/v1/fill/w_511,h_769,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/d897d1_3cf70d89937745079ef15120de94d08d~mv2.jpg" 
+                         class="w-24 h-24 rounded-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 border border-gray-300 p-1" 
+                         alt="Joel Tobias Hufana">
+                </div>
+
+                <div class="text-center mb-12 text-fade-scroll">
+                    <div class="text-xs uppercase tracking-widest opacity-50 mb-1">Founder</div>
+                    <div class="text-xl font-normal text-black">– Joel Tobias Hufana</div>
+                </div>
+            </section>
+        </div>
+
+        <div id="tab-news" class="tab-panel">
+            <section class="border-t border-black/10 pt-16 lg:pt-24 mb-16">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12">
+                    <div class="lg:col-span-7">
+                        <h2 class="content-lead">Latest news and updates.</h2>
+                    </div>
+                    <div class="lg:col-span-5">
+                        <p class="text-gray-500 font-light text-lg leading-relaxed">
+                            Short updates about schedules, material advisories, completed work, and service announcements.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="news-grid">
+                    <article class="news-card span-6">
+                        <div class="news-meta">
+                            <span class="news-date">February 2026</span>
+                            <span class="news-tag">Project Update</span>
+                        </div>
+                        <h3 class="news-title">Recent residential turnover completed</h3>
+                        <p class="news-body">Completed installation of sliding glass windows and aluminum frames for a residential unit in Metro Manila. Final alignment and sealing checks were finished before handover.</p>
+                    </article>
+
+                    <article class="news-card span-6">
+                        <div class="news-meta">
+                            <span class="news-date">February 2026</span>
+                            <span class="news-tag">Lead Time</span>
+                        </div>
+                        <h3 class="news-title">Current production queue advisory</h3>
+                        <p class="news-body">Standard projects are currently being scheduled within normal lead times. Custom configurations may require additional fabrication days depending on material availability.</p>
+                    </article>
+
+                    <article class="news-card span-4">
+                        <div class="news-meta">
+                            <span class="news-date">January 2026</span>
+                            <span class="news-tag">Operations</span>
+                        </div>
+                        <h3 class="news-title">Updated booking workflow</h3>
+                        <p class="news-body">Admin-side tracking now follows stricter status transitions for clearer scheduling and fewer timeline conflicts.</p>
+                    </article>
+
+                    <article class="news-card span-4">
+                        <div class="news-meta">
+                            <span class="news-date">January 2026</span>
+                            <span class="news-tag">Catalog</span>
+                        </div>
+                        <h3 class="news-title">Catalog data refinements</h3>
+                        <p class="news-body">Product and option records were cleaned and aligned to current offerings to improve quote consistency and reduce input errors.</p>
+                    </article>
+
+                    <article class="news-card span-4">
+                        <div class="news-meta">
+                            <span class="news-date">January 2026</span>
+                            <span class="news-tag">Service Note</span>
+                        </div>
+                        <h3 class="news-title">Customer support hours reminder</h3>
+                        <p class="news-body">For faster response, inquiry follow-ups are prioritized during office hours. Site visit confirmations are coordinated directly by the team.</p>
+                    </article>
+
+                    <article class="news-card span-8">
+                        <div class="news-meta">
+                            <span class="news-date">December 2025</span>
+                            <span class="news-tag">Material Advisory</span>
+                        </div>
+                        <h3 class="news-title">Glass and aluminum supply note</h3>
+                        <p class="news-body">Lead times and pricing may adjust based on supplier movement. Final quotations remain subject to actual site measurements and selected system specifications.</p>
+                    </article>
+
+                    <article class="news-card span-4">
+                        <div class="news-meta">
+                            <span class="news-date">December 2025</span>
+                            <span class="news-tag">FAQ</span>
+                        </div>
+                        <h3 class="news-title">Most asked this month</h3>
+                        <p class="news-body">Common questions continue to be about warranty coverage, fabrication timelines, and options for tempered versus laminated glass.</p>
+                    </article>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+    <script>
+        function splitTextIntoWords(selector) {
+            document.querySelectorAll(selector).forEach(element => {
+                const nodes = Array.from(element.childNodes);
+                let newHTML = '';
+                nodes.forEach(node => {
+                    if (node.nodeType === 3) {
+                        const words = node.textContent.split(' ');
+                        words.forEach(word => {
+                            if (word.trim() !== '') newHTML += `<span class="word-wrap"><span class="word-inner">${word}</span></span> `;
+                            else newHTML += ' ';
+                        });
+                    } else {
+                        if(node.tagName === 'BR') newHTML += '<br>';
+                        else newHTML += node.outerHTML; 
+                    }
+                });
+                element.innerHTML = newHTML;
+            });
+        }
+
+        const nav = document.getElementById('main-nav');
+        const mobileMenuBtn = document.getElementById('dxt-menu-btn');
+        const mobileMenuPanel = document.getElementById('dxt-mobile-panel');
+        const mobileMenuClose = document.getElementById('dxt-menu-close');
+        const PAGE_TRANSITION_MS = 480;
+
+        document.body.classList.add('page-enter');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.body.classList.remove('page-enter');
+            });
+        });
+
+        function scrollToHashTarget(rawHash, behavior = 'smooth') {
+            if (!rawHash || rawHash === '#') return false;
+            let target = null;
+            try {
+                target = document.querySelector(rawHash);
+            } catch (_) {
+                return false;
+            }
+            if (!target) return false;
+
+            const navHeight = nav ? nav.offsetHeight : 0;
+            const top = window.pageYOffset + target.getBoundingClientRect().top - navHeight - 12;
+            window.scrollTo({ top: Math.max(0, top), behavior });
+            history.replaceState(null, '', rawHash);
+            return true;
+        }
+
+        const wireNavPageTransition = () => {
+            document.querySelectorAll('.dxt-nav a[href], .dxt-mobile-panel a[href]').forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    if (event.defaultPrevented) return;
+                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                    if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+                    const rawHref = link.getAttribute('href');
+                    if (!rawHref) return;
+                    if (rawHref.startsWith('#')) {
+                        event.preventDefault();
+                        const moved = scrollToHashTarget(rawHref, 'smooth');
+                        if (!moved) {
+                            window.location.hash = rawHref;
+                        }
+                        return;
+                    }
+
+                    const targetUrl = new URL(link.href, window.location.href);
+                    if (targetUrl.origin !== window.location.origin) return;
+
+                    const samePath = targetUrl.pathname === window.location.pathname;
+                    if (samePath) return;
+
+                    event.preventDefault();
+                    document.body.classList.add('page-leave');
+                    setTimeout(() => {
+                        window.location.href = targetUrl.href;
+                    }, PAGE_TRANSITION_MS);
+                });
+            });
+        };
+        wireNavPageTransition();
+        if (window.location.hash) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    scrollToHashTarget(window.location.hash, 'auto');
+                }, 50);
+            }, { once: true });
+        }
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+        if (mobileMenuBtn && mobileMenuPanel) {
+            const setMenuState = (open) => {
+                mobileMenuPanel.classList.toggle('open', open);
+                mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                document.body.style.overflow = open ? 'hidden' : '';
+            };
+            mobileMenuBtn.addEventListener('click', () => {
+                const isOpen = !mobileMenuPanel.classList.contains('open');
+                setMenuState(isOpen);
+            });
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', () => setMenuState(false));
+            }
+            mobileMenuPanel.querySelectorAll('.dxt-mobile-link').forEach((link) => {
+                link.addEventListener('click', () => setMenuState(false));
+            });
+        }
+
+        const subnavTabs = document.querySelectorAll('.story-subnav[data-tab]');
+        const tabPanels = {
+            story: document.getElementById('tab-story'),
+            news: document.getElementById('tab-news')
+        };
+        const setAboutTab = (tabKey) => {
+            Object.entries(tabPanels).forEach(([key, panel]) => {
+                if (!panel) return;
+                panel.classList.toggle('active', key === tabKey);
+            });
+            subnavTabs.forEach((tab) => {
+                tab.classList.toggle('active', tab.dataset.tab === tabKey);
+            });
+        };
+        subnavTabs.forEach((tab) => {
+            tab.addEventListener('click', (event) => {
+                event.preventDefault();
+                const targetTab = tab.dataset.tab === 'news' ? 'news' : 'story';
+                setAboutTab(targetTab);
+            });
+        });
+
+        window.addEventListener("load", () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+            window.__jthLenis = lenis;
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            splitTextIntoWords(".text-split-anim");
+            splitTextIntoWords(".text-split-scroll");
+
+            const tl = gsap.timeline();
+            tl.from(".text-split-anim .word-inner", { yPercent: 100, opacity: 0, duration: 1, stagger: 0.04, ease: "power4.out" }, 0.5);
+            tl.from(".reveal-item", { y: 20, opacity: 0, duration: 1, stagger: 0.1, ease: "power2.out" }, 0.8);
+            tl.from(".reveal-scale", { scale: 0.95, opacity: 0, duration: 1.2, ease: "power2.out" }, 1.0);
+
+            document.querySelectorAll(".text-split-scroll").forEach(el => {
+                gsap.from(el.querySelectorAll(".word-inner"), {
+                    yPercent: 100, duration: 0.8, stagger: 0.02, ease: "power3.out",
+                    scrollTrigger: { trigger: el, start: "top 85%" }
+                });
+            });
+
+            document.querySelectorAll(".text-fade-scroll").forEach(el => {
+                gsap.from(el, { y: 30, opacity: 0, duration: 1, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 85%" } });
+            });
+        });
+    </script>
+    <div id="chat-widget-root"></div>
+    <script src="js/chat-widget.js"></script>
+    <div id="site-footer"></div>
+    <script src="js/footer.js"></script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>

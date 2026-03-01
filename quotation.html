@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Quote | Glass System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdqwHIsAAAAAEQRzF1v-XzxuFcqqypbIz7fMKfw"></script>
+    <style>
+        body { background-color: #F8FAFC; font-family: 'Inter', sans-serif; color: #111; }
+        .input-box { width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 6px; outline: none; }
+        .input-box:focus { border-color: #000; ring: 1px #000; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <h2 class="text-2xl font-bold tracking-tight mb-2">Instant Quotation</h2>
+        <p class="text-sm text-gray-500 mb-6">Enter measurements to get a price and book installation.</p>
+
+        <form id="quoteForm" class="space-y-4">
+            
+            <!-- Step 1: Selection -->
+            <div>
+                <label class="text-xs font-bold uppercase text-gray-400">Product</label>
+                <select id="product" class="input-box bg-white mt-1">
+                    <option value="sliding_window">Sliding Window (Standard)</option>
+                    <option value="casement">Casement Window</option>
+                    <option value="glass_door">Tempered Glass Door</option>
+                    <option value="shower_enclosure">Shower Enclosure</option>
+                </select>
+            </div>
+
+            <!-- Step 2: Measurements -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-bold uppercase text-gray-400">Width (ft)</label>
+                    <input type="number" step="0.1" id="width" class="input-box mt-1" required placeholder="0.0">
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase text-gray-400">Height (ft)</label>
+                    <input type="number" step="0.1" id="height" class="input-box mt-1" required placeholder="0.0">
+                </div>
+            </div>
+
+            <!-- Step 3: Customer Details -->
+            <div class="pt-4 border-t border-gray-100">
+                <label class="text-xs font-bold uppercase text-gray-400">Your Name</label>
+                <input type="text" id="name" class="input-box mt-1" required>
+            </div>
+            <div>
+                <label class="text-xs font-bold uppercase text-gray-400">Mobile Number</label>
+                <input type="tel" id="phone" class="input-box mt-1" required>
+            </div>
+
+            <!-- Total Estimate -->
+            <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center mt-4">
+                <span class="text-sm text-gray-500">Est. Price:</span>
+                <span id="priceDisplay" class="text-xl font-bold">--</span>
+            </div>
+
+            <button type="submit" class="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition shadow-lg shadow-gray-200/50">
+                Submit Request
+            </button>
+            <div id="status" class="text-center text-xs mt-2 font-bold h-4"></div>
+        </form>
+    </div>
+
+    <script>
+        const RECAPTCHA_SITE_KEY = '6LdqwHIsAAAAAEQRzF1v-XzxuFcqqypbIz7fMKfw';
+        const quoteFormStartedAt = Math.floor(Date.now() / 1000);
+
+        function getRecaptchaToken(action) {
+            if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
+                return Promise.reject(new Error('reCAPTCHA is not loaded.'));
+            }
+            return new Promise((resolve, reject) => {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
+                        .then(resolve)
+                        .catch(() => reject(new Error('Failed to generate reCAPTCHA token.')));
+                });
+            });
+        }
+
+        const RATES = { 'sliding_window': 350, 'casement': 450, 'glass_door': 850, 'shower_enclosure': 500 };
+
+        ['width', 'height', 'product'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                const w = parseFloat(document.getElementById('width').value) || 0;
+                const h = parseFloat(document.getElementById('height').value) || 0;
+                const p = document.getElementById('product').value;
+                if(w && h) {
+                    const price = w * h * RATES[p];
+                    document.getElementById('priceDisplay').innerText = "$" + price.toLocaleString();
+                }
+            });
+        });
+
+        document.getElementById('quoteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const status = document.getElementById('status');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            const recaptchaToken = await getRecaptchaToken('quote_submit');
+            const data = {
+                product: document.getElementById('product').value,
+                width: document.getElementById('width').value,
+                height: document.getElementById('height').value,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                consent: true,
+                website: '',
+                form_started_at: quoteFormStartedAt,
+                idempotency_key: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                recaptcha_token: recaptchaToken
+            };
+
+            try {
+                const response = await fetch('backend/process.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    status.innerText = "Success! Quotation ID: " + result.booking_id;
+                    status.className = "text-center text-xs mt-2 font-bold h-4 text-green-600";
+                    btn.innerText = "Sent";
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                status.innerText = "Error submitting.";
+                btn.disabled = false;
+                btn.innerText = "Submit Request";
+            }
+        });
+    </script>
+    <div id="site-footer"></div>
+    <script src="js/footer.js"></script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>

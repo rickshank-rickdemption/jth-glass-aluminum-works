@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | JTH Glass</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdqwHIsAAAAAEQRzF1v-XzxuFcqqypbIz7fMKfw"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        border: "hsl(240 5.9% 90%)",
+                        input: "hsl(240 5.9% 90%)",
+                        ring: "hsl(240 5% 64.9%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(240 10% 3.9%)",
+                        primary: {
+                            DEFAULT: "hsl(240 5.9% 10%)",
+                            foreground: "hsl(0 0% 98%)",
+                        },
+                        muted: {
+                            DEFAULT: "hsl(240 4.8% 95.9%)",
+                            foreground: "hsl(240 3.8% 46.1%)",
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .shadcn-input {
+            height: 2.5rem; /* h-10 */
+            width: 100%;
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid #E4E4E7;
+            background-color: transparent;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25rem;
+            color: #18181B;
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        .shadcn-input:focus {
+            outline: none;
+            border-color: #18181B; /* Ring color */
+            box-shadow: 0 0 0 1px #18181B;
+        }
+        .shadcn-input::placeholder { color: #A1A1AA; }
+        
+        .shadcn-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            height: 2.5rem;
+            width: 100%;
+            background-color: #18181B;
+            color: white;
+            transition: all 0.2s;
+        }
+        .shadcn-btn:hover { background-color: #27272A; }
+        .shadcn-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center bg-white p-4">
+
+    <div class="w-full max-w-[350px] space-y-6">
+        
+        <!-- Header -->
+        <div class="flex flex-col space-y-2 text-center">
+            <h1 class="text-2xl font-bold tracking-tight text-primary">
+                JTH Glass and Aluminum Works
+            </h1>
+            <p class="text-sm text-muted-foreground">
+                Enter your admin credentials below to login
+            </p>
+        </div>
+
+        <!-- Form -->
+        <div id="login-container">
+            <form id="loginForm" class="space-y-4">
+                
+                <div class="space-y-2">
+                    <!-- Label is technically hidden in your reference but good for accessibility -->
+                    <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only" for="adminId">
+                        Admin ID
+                    </label>
+                    <input type="text" id="adminId" class="shadcn-input" placeholder="Administrator ID" required>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only" for="password">
+                        Password
+                    </label>
+                    <input type="password" id="password" class="shadcn-input" placeholder="Password" required>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only" for="totpCode">
+                        Authenticator Code
+                    </label>
+                    <input type="text" id="totpCode" inputmode="numeric" maxlength="6" class="shadcn-input" placeholder="Authenticator code (6 digits)">
+                    <p class="text-[11px] text-zinc-500">TOTP is required after recovery setup is enabled.</p>
+                </div>
+
+                <!-- Error Message (Hidden by default) -->
+                <p id="error" class="text-[0.8rem] font-medium text-red-500 text-center hidden">
+                    Invalid credentials. Please try again.
+                </p>
+                <p class="text-center">
+                    <a href="admin-recover.html" class="text-xs text-zinc-500 hover:text-zinc-900 underline">Forgot password?</a>
+                </p>
+
+                <button type="submit" class="shadcn-btn shadow-sm">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        const ADMIN_RECAPTCHA_SITE_KEY = '6LdqwHIsAAAAAEQRzF1v-XzxuFcqqypbIz7fMKfw';
+
+        function getAdminRecaptchaToken() {
+            if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
+                return Promise.resolve('');
+            }
+            return new Promise((resolve) => {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha.execute(ADMIN_RECAPTCHA_SITE_KEY, { action: 'admin_login' })
+                        .then((token) => resolve(String(token || '')))
+                        .catch(() => resolve(''));
+                });
+            });
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const container = document.getElementById('login-container');
+            const idInput = document.getElementById('adminId');
+            const passInput = document.getElementById('password');
+            const totpInput = document.getElementById('totpCode');
+            const err = document.getElementById('error');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+
+            err.classList.add('hidden');
+            container.classList.remove('shake');
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+            
+            try {
+                await new Promise(r => setTimeout(r, 400));
+
+                const recaptchaToken = await getAdminRecaptchaToken();
+                const response = await fetch('backend/auth.php?action=login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: idInput.value,
+                        password: passInput.value,
+                        totp_code: String(totpInput?.value || '').replace(/\D+/g, ''),
+                        recaptcha_token: recaptchaToken
+                    })
+                });
+                
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    window.location.href = 'admin-dashboard.php';
+                } else if (result.status === 'reset_required') {
+                    window.location.href = 'admin-password-reset.html';
+                } else if (result.status === 'recovery_setup_required') {
+                    window.location.href = 'admin-recovery-setup.html';
+                } else if (result.reason === 'TOTP_REQUIRED') {
+                    throw new Error('Invalid or missing authenticator code.');
+                } else {
+                    throw new Error(result.message || 'Invalid Login');
+                }
+
+            } catch (error) {
+                err.textContent = error.message || 'Invalid credentials. Please try again.';
+                err.classList.remove('hidden');
+                container.classList.add('shake'); // Shake effect
+                
+                btn.innerText = originalText;
+                btn.disabled = false;
+                
+                passInput.value = ''; 
+                if (totpInput) totpInput.value = '';
+                passInput.focus();
+            }
+        });
+    </script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>

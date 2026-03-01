@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Booking | JTH Glass & Aluminum Works</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { background: #fff; color: #111827; font-family: 'Inter', sans-serif; }
+        .input-line {
+            width: 100%;
+            border: 1px solid #E5E7EB;
+            border-radius: 10px;
+            height: 44px;
+            padding: 0 12px;
+            outline: none;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .input-line:focus {
+            border-color: #111827;
+            box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+        }
+        .timeline-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #111827;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #D4D4D8;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 font-sans">
+    <main class="max-w-5xl mx-auto px-4 py-10 md:py-14">
+        <a href="index.html" class="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900 transition mb-7">← Back to Home</a>
+        <section class="mb-8">
+            <p class="text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">Customer Tracking</p>
+            <h1 class="text-3xl md:text-4xl font-semibold mt-2">Track Your Booking</h1>
+            <p class="text-zinc-600 mt-3 max-w-2xl">
+                Enter your booking reference to view the latest booking status and timeline. You may also add email or phone for extra verification.
+            </p>
+        </section>
+
+        <section class="border border-zinc-200 rounded-2xl p-5 md:p-7 bg-white shadow-sm">
+            <form id="track-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 mb-1 block">Booking Reference</label>
+                    <input id="booking-id" class="input-line uppercase" placeholder="BK-XXXXXXXX" maxlength="20" required>
+                </div>
+                <div>
+                    <label class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 mb-1 block">Email (optional)</label>
+                    <input id="booking-email" type="email" class="input-line" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500 mb-1 block">Phone (optional)</label>
+                    <input id="booking-phone" class="input-line" placeholder="09xxxxxxxxx">
+                </div>
+                <div class="md:col-span-2 flex items-center gap-3 pt-1">
+                    <button id="track-btn" type="submit" class="h-11 px-5 rounded-lg bg-black text-white text-sm font-semibold hover:bg-zinc-800 transition">
+                        Check Status
+                    </button>
+                    <p id="track-feedback" class="text-xs text-red-600"></p>
+                </div>
+            </form>
+        </section>
+
+        <section id="result-wrap" class="mt-8 hidden">
+            <div class="border border-zinc-200 rounded-2xl p-5 md:p-7 bg-white shadow-sm">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <div class="text-[11px] uppercase tracking-[0.14em] text-zinc-500 font-semibold">Current Status</div>
+                        <h2 id="result-status" class="text-2xl font-semibold mt-1">Pending</h2>
+                        <p id="result-live-state" class="text-[11px] text-zinc-500 mt-1">Live: polling fallback</p>
+                    </div>
+                    <div class="text-right">
+                        <div id="result-id" class="text-sm text-zinc-700">BK-XXXX</div>
+                        <div id="result-date" class="text-xs text-zinc-500 mt-1">Date: —</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-sm">
+                    <div class="rounded-lg border border-zinc-200 p-3">
+                        <div class="text-[10px] uppercase tracking-widest text-zinc-500">Customer</div>
+                        <div id="result-customer" class="font-medium mt-1">—</div>
+                    </div>
+                    <div class="rounded-lg border border-zinc-200 p-3">
+                        <div class="text-[10px] uppercase tracking-widest text-zinc-500">Product</div>
+                        <div id="result-product" class="font-medium mt-1">—</div>
+                    </div>
+                    <div class="rounded-lg border border-zinc-200 p-3">
+                        <div class="text-[10px] uppercase tracking-widest text-zinc-500">Estimated Amount</div>
+                        <div id="result-amount" class="font-medium mt-1">₱0.00</div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-sm font-semibold uppercase tracking-[0.12em] text-zinc-500">Timeline</h3>
+                    <div id="result-timeline" class="mt-4 space-y-4 border-l border-zinc-200 pl-5"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('track-form');
+        const feedback = document.getElementById('track-feedback');
+        const trackBtn = document.getElementById('track-btn');
+        const wrap = document.getElementById('result-wrap');
+        const WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:8081`;
+
+        let trackedQuery = null;
+        let trackedWsToken = '';
+        let wsClient = null;
+        let wsReconnectTimer = null;
+        let refreshTimer = null;
+        let pollingTimer = null;
+
+        const fmtMoney = (v) => {
+            const n = Number(v || 0);
+            return `₱${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        };
+        const fmtDateTime = (sec) => {
+            const n = Number(sec || 0);
+            if (!Number.isFinite(n) || n <= 0) return '—';
+            return new Date(n * 1000).toLocaleString();
+        };
+        const normalizeBookingId = (value) => String(value || '').trim().toUpperCase();
+        const sanitizePhone = (value) => String(value || '').replace(/\D+/g, '').slice(0, 13);
+        function setRealtimeState(text) {
+            const el = document.getElementById('result-live-state');
+            if (!el) return;
+            el.textContent = `Live: ${text}`;
+        }
+        function startPollingFallback() {
+            if (pollingTimer) return;
+            pollingTimer = setInterval(async () => {
+                if (!trackedQuery) return;
+                try {
+                    await fetchTrackedBooking(trackedQuery, { silent: true });
+                } catch (_) {
+                }
+            }, 30000);
+        }
+
+        function renderBooking(b, fallbackId) {
+            document.getElementById('result-status').textContent = b.status || 'Pending';
+            document.getElementById('result-id').textContent = b.id || fallbackId || '—';
+            document.getElementById('result-date').textContent = `Preferred Date: ${b.install_date || '—'}`;
+            document.getElementById('result-customer').textContent = b.customer || 'Customer';
+            document.getElementById('result-product').textContent = b.product || '—';
+            document.getElementById('result-amount').textContent = fmtMoney(b.amount);
+
+            const timelineEl = document.getElementById('result-timeline');
+            timelineEl.innerHTML = '';
+            const timeline = Array.isArray(b.timeline) ? b.timeline : [];
+            if (timeline.length === 0) {
+                timelineEl.innerHTML = `<div class="text-sm text-zinc-500">No timeline records yet.</div>`;
+            } else {
+                timeline.forEach((item) => {
+                    const from = String(item.from || '').trim();
+                    const to = String(item.to || '').trim();
+                    const action = String(item.action || 'update').replace(/_/g, ' ');
+                    const reason = String(item.reason || '').trim();
+                    const transition = from && to ? `${from} → ${to}` : (to || from || 'Status update');
+
+                    const row = document.createElement('div');
+                    row.className = 'relative';
+                    row.innerHTML = `
+                        <div class="timeline-dot absolute -left-[26px] top-1"></div>
+                        <div class="text-[11px] uppercase tracking-widest text-zinc-400">${fmtDateTime(item.timestamp)}</div>
+                        <div class="text-sm font-semibold text-zinc-900 mt-0.5">${transition}</div>
+                        <div class="text-xs text-zinc-500 mt-0.5">Action: ${action}</div>
+                        ${reason ? `<div class="text-xs text-zinc-600 mt-1">Reason: ${reason}</div>` : ''}
+                    `;
+                    timelineEl.appendChild(row);
+                });
+            }
+
+            wrap.classList.remove('hidden');
+        }
+
+        async function fetchTrackedBooking(query, { silent = false } = {}) {
+            const booking_id = normalizeBookingId(query?.booking_id);
+            const email = String(query?.email || '').trim();
+            const phone = sanitizePhone(query?.phone);
+
+            if (!booking_id) throw new Error('Please enter your booking reference.');
+
+            if (!silent) {
+                feedback.textContent = '';
+                wrap.classList.add('hidden');
+                trackBtn.disabled = true;
+                trackBtn.textContent = 'Checking...';
+            }
+
+            try {
+                const res = await fetch('backend/track_booking.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ booking_id, email, phone })
+                });
+                const json = await res.json();
+                if (json.status !== 'success' || !json.booking) {
+                    throw new Error(json.message || 'Unable to find booking.');
+                }
+                trackedWsToken = String(json.ws_token || '').trim();
+                renderBooking(json.booking, booking_id);
+                trackedQuery = { booking_id, email, phone };
+                startPollingFallback();
+                startRealtime();
+            } catch (err) {
+                if (!silent) {
+                    feedback.textContent = err.message || 'Unable to check booking.';
+                }
+                throw err;
+            } finally {
+                if (!silent) {
+                    trackBtn.disabled = false;
+                    trackBtn.textContent = 'Check Status';
+                }
+            }
+        }
+
+        function queueRealtimeRefresh() {
+            if (!trackedQuery || refreshTimer) return;
+            refreshTimer = setTimeout(async () => {
+                refreshTimer = null;
+                try {
+                    await fetchTrackedBooking(trackedQuery, { silent: true });
+                } catch (_) {
+                }
+            }, 220);
+        }
+
+        function scheduleWsReconnect() {
+            if (wsReconnectTimer) return;
+            wsReconnectTimer = setTimeout(() => {
+                wsReconnectTimer = null;
+                startRealtime();
+            }, 3000);
+        }
+
+        function startRealtime() {
+            if (!trackedWsToken) return;
+            if (wsClient && (wsClient.readyState === WebSocket.OPEN || wsClient.readyState === WebSocket.CONNECTING)) {
+                return;
+            }
+            try {
+                wsClient = new WebSocket(`${WS_URL}?token=${encodeURIComponent(trackedWsToken)}`);
+            } catch (_) {
+                setRealtimeState('polling fallback');
+                scheduleWsReconnect();
+                return;
+            }
+
+            wsClient.addEventListener('open', () => {
+                setRealtimeState('connected');
+            });
+
+            wsClient.addEventListener('message', (event) => {
+                if (!trackedQuery) return;
+                try {
+                    const payload = JSON.parse(event.data);
+                    if (!payload || payload.type !== 'status_updated') return;
+
+                    const evtId = normalizeBookingId(payload?.payload?.id || '');
+                    if (!evtId || evtId !== trackedQuery.booking_id) return;
+
+                    queueRealtimeRefresh();
+                } catch (_) {
+                }
+            });
+
+            wsClient.addEventListener('close', () => {
+                wsClient = null;
+                setRealtimeState('reconnecting (polling fallback)');
+                scheduleWsReconnect();
+            });
+            wsClient.addEventListener('error', () => {
+                setRealtimeState('reconnecting (polling fallback)');
+                scheduleWsReconnect();
+            });
+        }
+
+        document.getElementById('booking-phone').addEventListener('input', (e) => {
+            e.target.value = sanitizePhone(e.target.value);
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const booking_id = normalizeBookingId(document.getElementById('booking-id').value || '');
+            const email = String(document.getElementById('booking-email').value || '').trim();
+            const phone = sanitizePhone(document.getElementById('booking-phone').value || '');
+
+            try {
+                await fetchTrackedBooking({ booking_id, email, phone });
+            } catch (_) {}
+        });
+
+    </script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>

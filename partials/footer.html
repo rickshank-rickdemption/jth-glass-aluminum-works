@@ -1,0 +1,169 @@
+<style>
+    .footer-dark { background-color: #151515; color: white; padding: 8rem 4rem 4rem 4rem; position: relative; }
+    .footer-heading { font-size: clamp(3rem, 5vw, 6rem); font-weight: 300; letter-spacing: -0.03em; margin-bottom: 6rem; }
+    .footer-input-group { margin-bottom: 2.5rem; }
+    .footer-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); display: block; margin-bottom: 0.5rem; }
+    .footer-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 10px 0; color: white; font-size: 1rem; font-weight: 300; outline: none; transition: border-color 0.3s; }
+    .footer-input:focus { border-bottom-color: white; }
+    .footer-submit-btn { border: 1px solid white; padding: 12px 36px; border-radius: 100px; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; display: inline-block; margin-top: 1rem; }
+    .footer-submit-btn:hover { background: white; color: black; }
+    .footer-brand { font-size: clamp(4rem, 10vw, 12rem); font-weight: 200; line-height: 1; letter-spacing: -0.04em; margin-top: 8rem; margin-bottom: 1rem; color: rgba(255,255,255,0.9); }
+    .footer-sub { font-size: 1.5rem; font-weight: 300; color: rgba(255,255,255,0.6); }
+    .footer-legal { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4rem; padding-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.4); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .footer-legal-links { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .footer-legal-link { color: rgba(255,255,255,0.72); text-decoration: none; transition: color .2s ease, opacity .2s ease; }
+    .footer-legal-link:hover { color: #FFFFFF; }
+    .footer-legal-sep { opacity: 0.35; }
+    .footer-legal-admin {
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        color: #FFFFFF;
+    }
+    .footer-legal-admin:hover {
+        border-color: transparent;
+    }
+    .footer-legal {
+        justify-content: space-between;
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.5);
+        margin-top: 1.1rem;
+        padding-top: 1rem;
+    }
+    .footer-legal-links {
+        margin-left: auto;
+    }
+    .footer-legal-only {
+        margin: 0;
+    }
+    .hp-trap {
+        position: absolute !important;
+        left: -10000px !important;
+        width: 1px !important;
+        height: 1px !important;
+        overflow: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    @media(max-width: 768px) {
+        .footer-dark { padding: 4rem 2rem 6.5rem; }
+        .footer-brand {
+            margin-top: 3.2rem;
+            font-size: clamp(3.2rem, 12vw, 4.8rem);
+            line-height: 0.92;
+        }
+        .footer-sub {
+            margin-top: 0.4rem;
+            font-size: 1.05rem;
+        }
+        .footer-legal {
+            margin-top: 2rem;
+        }
+    }
+
+</style>
+
+<footer id="contact" class="footer-dark">
+    <h2 class="footer-heading">Contact us.</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
+        <form id="contactForm">
+            <div class="hp-trap" aria-hidden="true">
+                <label for="contact-website">Website</label>
+                <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <input type="hidden" id="contact-started-at" value="">
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div class="footer-input-group">
+                    <label class="footer-label">First name *</label>
+                    <input type="text" id="contact-fname" class="footer-input" required>
+                </div>
+                <div class="footer-input-group">
+                    <label class="footer-label">Last name</label>
+                    <input type="text" id="contact-lname" class="footer-input">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div class="footer-input-group">
+                    <label class="footer-label">Your email *</label>
+                    <input type="email" id="contact-email" class="footer-input" required>
+                </div>
+                <div class="footer-input-group">
+                    <label class="footer-label">Your phone (11 Digits)</label>
+                    <input type="tel" id="contact-phone" class="footer-input" maxlength="11" placeholder="09xxxxxxxxx">
+                </div>
+            </div>
+            <div class="footer-input-group">
+                <label class="footer-label">Your message *</label>
+                <textarea id="contact-message" class="footer-input" rows="2" required></textarea>
+            </div>
+            <div class="footer-input-group">
+                <label class="footer-label">Attach sample photo/spec (optional)</label>
+                <input
+                    type="file"
+                    id="contact-attachments"
+                    class="footer-input"
+                    accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx"
+                    multiple
+                >
+                <p class="text-[11px] text-white/50 mt-2">Up to 3 files, max 5MB each.</p>
+            </div>
+
+            <div class="mt-4">
+                <label class="text-xs text-white/70 flex items-start gap-2">
+                    <input type="checkbox" id="contact-consent" class="mt-0.5" required>
+                    <span>I consent to the collection and processing of my name, contact details, address, and project details for quotation, booking coordination, and service updates. I understand records may be retained for up to 12 months.</span>
+                </label>
+            </div>
+
+            <div class="mt-8 flex items-center gap-6">
+                <button type="submit" id="contact-submit-btn" class="footer-submit-btn">SUBMIT INQUIRY</button>
+                <p id="contact-feedback" class="text-xs font-bold transition-opacity opacity-0"></p>
+            </div>
+        </form>
+        <div class="flex flex-col gap-10 lg:gap-12 lg:pl-20 text-gray-400 font-light text-base md:text-lg">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8">
+                <div class="text-sm uppercase tracking-widest text-white/50">Contact</div>
+                <div>
+                    <p class="mb-2 text-white">
+                        <a href="tel:+639163395673" class="hover:text-white transition">0916 339 5673</a>
+                    </p>
+                    <p class="mb-2 text-white">
+                        <a href="tel:+63287497750" class="hover:text-white transition">(02) 8749 7750</a>
+                    </p>
+                    <p class="break-all sm:break-normal">
+                        <a href="mailto:jthglass.aluminumworks.biz@gmail.com" class="hover:text-white transition">jthglass.aluminumworks.biz@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8">
+                <div class="text-sm uppercase tracking-widest text-white/50">Office</div>
+                <div><p>142 M. Dela Fuente St,</p><p>Sampaloc, Manila</p></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-8">
+                <div class="text-sm uppercase tracking-widest text-white/50">Social</div>
+                <div>
+                    <p class="mb-2">
+                        <a
+                            href="https://www.facebook.com/people/JTH-Glass-and-Aluminum-Works/61556641336145/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="hover:text-white transition"
+                        >Facebook</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1 class="footer-brand">JTH Glass and Aluminum Works</h1>
+    <p class="footer-sub">Professional fabrication solutions.</p>
+    <div class="footer-legal">
+        <p class="footer-legal-only">© 2026 JTH Glass and Aluminum Works. All Rights Reserved.</p>
+        <div class="footer-legal-links hidden md:flex" aria-label="Footer links">
+            <a class="footer-legal-link" href="privacy-policy.html">Privacy Policy</a>
+            <span class="footer-legal-sep">•</span>
+            <a class="footer-legal-link" href="terms-conditions.html">Terms</a>
+            <span class="footer-legal-sep">•</span>
+            <a class="footer-legal-link" href="track-booking.html">Track Booking</a>
+        </div>
+    </div>
+</footer>

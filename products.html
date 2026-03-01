@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog | JTH Glass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --bg: #FFFFFF; --text: #111; }
+        @media (max-width: 900px) {
+        }
+        html { scroll-behavior: smooth; }
+        html.lenis { height: auto; } .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(0);
+        }
+        body.page-enter,
+        body.page-leave {
+            opacity: 0 !important;
+            transform: translateY(8px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body { transition: none; }
+        }
+        
+        .heading-xl { font-size: clamp(3rem, 5vw, 6rem); font-weight: 300; line-height: 1; letter-spacing: -0.03em; }
+        .heading-lg { font-size: clamp(2rem, 3vw, 3rem); font-weight: 300; letter-spacing: -0.02em; }
+        .text-body { font-size: 1.1rem; font-weight: 300; color: #555; line-height: 1.6; }
+
+        .spec-card {
+            background: #FFFFFF;
+            padding: 1.4rem 1.35rem;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.35);
+        }
+        .spec-card:hover {
+            transform: translateY(-4px);
+            border-color: #D1D5DB;
+            box-shadow: 0 20px 36px -18px rgba(0, 0, 0, 0.22);
+        }
+        .spec-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #6B7280;
+            border: 1px solid #E5E7EB;
+            border-radius: 999px;
+            padding: 4px 10px;
+            margin-bottom: .65rem;
+            background: #F9FAFB;
+        }
+
+        .feature-img-wrap { overflow: hidden; position: relative; height: 60vh; width: 100%; }
+        .feature-img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .feature-row:hover .feature-img { transform: scale(1.05); }
+
+        .list-grid-item { 
+            border-top: 1px solid rgba(0,0,0,0.1); padding: 1.5rem 0; 
+            display: flex; justify-content: space-between; align-items: center;
+            font-weight: 300; font-size: 1.1rem; color: #333;
+        }
+        .list-grid-item:last-child { border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .dot { width: 6px; height: 6px; background: #111; border-radius: 50%; opacity: 0; transition: opacity 0.3s; }
+        .list-grid-item:hover .dot { opacity: 1; }
+
+        .dxt-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            height: 84px;
+            display: grid;
+            grid-template-columns: 1.25fr repeat(5, 1fr) 1.05fr;
+            border-bottom: 1px solid #D3D6DE;
+            background: var(--bg);
+        }
+        .dxt-nav.scrolled { box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08); }
+        .dxt-nav-cell {
+            border-right: 1px solid #D9DCE4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+        .dxt-nav > .dxt-nav-cell:last-child {
+            border-right: 0;
+        }
+        .dxt-nav-cell.logo {
+            justify-content: flex-start;
+            padding-left: 20px;
+            line-height: 1;
+        }
+        .dxt-logo-img {
+            width: 124px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0);
+        }
+        .dxt-nav-link {
+            font-size: 34px;
+            letter-spacing: 0.01em;
+            color: #1F2937;
+            text-transform: uppercase;
+            transition: color .5s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .dxt-nav-link::before,
+        .dxt-nav-link::after {
+            content: "";
+            position: absolute;
+            height: 50%;
+            width: 0;
+            background-color: #000000;
+            transition: width .5s ease;
+            z-index: -1;
+        }
+        .dxt-nav-link::before { right: 0; top: 0; }
+        .dxt-nav-link::after { left: 0; bottom: 0; }
+        .dxt-nav-link:hover { color: #FFFFFF; }
+        .dxt-nav-link:hover::before,
+        .dxt-nav-link:hover::after { width: 100%; }
+        .dxt-nav-link.active {
+            color: #FFFFFF;
+        }
+        .dxt-nav-link.active::before,
+        .dxt-nav-link.active::after {
+            width: 100%;
+        }
+        .dxt-nav-talk {
+            background: #111111;
+            color: #fff;
+            font-size: 34px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            font-weight: 500;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            transition: background .2s ease;
+        }
+        .dxt-nav-talk:hover { background: #000000; }
+        .dxt-mobile-toggle,
+        .dxt-mobile-panel {
+            display: none;
+        }
+        .dxt-menu-btn {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+        }
+        .dxt-menu-icon {
+            width: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dxt-menu-icon span {
+            display: block;
+            height: 2px;
+            background: #111111;
+            border-radius: 999px;
+        }
+        .dxt-mobile-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            background-color: #000000;
+            background-image: repeating-linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.10) 0 1px,
+                transparent 1px 120px
+            );
+            color: #ffffff;
+            padding: 14px 16px 18px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.4s;
+        }
+        .dxt-mobile-panel.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+        }
+        .dxt-mobile-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .dxt-mobile-brand {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .dxt-mobile-logo-img {
+            width: 96px;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0) invert(1);
+        }
+        .dxt-mobile-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+        .dxt-mobile-close::before,
+        .dxt-mobile-close::after {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 16px;
+            width: 20px;
+            height: 2px;
+            background: #ffffff;
+        }
+        .dxt-mobile-close::before { transform: rotate(45deg); }
+        .dxt-mobile-close::after { transform: rotate(-45deg); }
+        .dxt-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dxt-mobile-link {
+            display: grid;
+            gap: 3px;
+            color: #ffffff;
+            padding: 6px 0;
+            text-transform: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .dxt-mobile-panel.open .dxt-mobile-link {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: calc(var(--i, 1) * 32ms);
+        }
+        .dxt-mobile-idx {
+            font-size: 12px;
+            opacity: 0.65;
+            letter-spacing: 0.06em;
+            line-height: 1;
+        }
+        .dxt-mobile-txt {
+            font-size: 46px;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+        .dxt-mobile-link.talk-link { margin-top: 6px; }
+        @media (max-width: 1280px) {
+            .dxt-nav { height: 74px; grid-template-columns: 1.3fr repeat(3, 1fr) 1.05fr; }
+            .dxt-nav-cell.hide-lg { display: none; }
+            .dxt-nav-cell.logo { font-size: 34px; }
+            .dxt-nav-link, .dxt-nav-talk { font-size: 24px; }
+        }
+        @media (max-width: 900px) {
+            .dxt-nav { height: 64px; grid-template-columns: 1fr 104px 120px; }
+            .dxt-nav-cell.menu-cell { display: none; }
+            .dxt-nav-cell.logo { border-right: 1px solid #D9DCE4; }
+            .dxt-logo-img { width: 92px; }
+            .dxt-mobile-toggle { display: flex; }
+            .dxt-mobile-panel { display: block; }
+            .dxt-mobile-txt { font-size: clamp(34px, 8.5vw, 52px); }
+            .dxt-nav-talk {
+                font-size: 0;
+                padding: 0;
+                position: relative;
+            }
+            .dxt-nav-talk::before {
+                content: "";
+                width: 20px;
+                height: 16px;
+                border: 2px solid #FFFFFF;
+                border-radius: 3px;
+                position: absolute;
+            }
+            .dxt-nav-talk::after {
+                content: "";
+                position: absolute;
+                width: 7px;
+                height: 7px;
+                border-left: 2px solid #FFFFFF;
+                border-bottom: 2px solid #FFFFFF;
+                transform: rotate(-45deg);
+                margin-top: 12px;
+                margin-left: -8px;
+            }
+        }
+
+        .nav-link { text-decoration: none; transition: color 0.2s ease; }
+        .nav-link:hover { color: #9CA3AF; }
+        .nav-link.active { color: #9CA3AF; font-weight: 400; }
+    </style>
+</head>
+<body>
+
+    <!-- NAV (Consistent with Index) -->
+    <nav id="main-nav" class="dxt-nav">
+        <div class="dxt-nav-cell logo">
+            <a href="index.html" class="leading-none" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-logo-img">
+            </a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="index.html" class="dxt-nav-link">Home</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="about.html" class="dxt-nav-link">About</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="index.html#process" class="dxt-nav-link">Process</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="products.html" class="dxt-nav-link active">Catalog</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="index.html#estimator" class="dxt-nav-link">Estimate</a>
+        </div>
+        <div class="dxt-nav-cell dxt-mobile-toggle">
+            <button id="dxt-menu-btn" class="dxt-menu-btn" aria-label="Open menu" aria-expanded="false">
+                <span class="dxt-menu-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+        </div>
+        <div class="dxt-nav-cell">
+            <a href="#site-footer" class="dxt-nav-talk">Let's Talk</a>
+        </div>
+    </nav>
+    <div id="dxt-mobile-panel" class="dxt-mobile-panel">
+        <div class="dxt-mobile-head">
+            <a href="index.html" class="dxt-mobile-brand" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-mobile-logo-img">
+            </a>
+            <button id="dxt-menu-close" class="dxt-mobile-close" aria-label="Close menu"></button>
+        </div>
+        <div class="dxt-mobile-links">
+            <a href="index.html" class="dxt-mobile-link" style="--i: 1"><span class="dxt-mobile-idx">001</span><span class="dxt-mobile-txt">Home</span></a>
+            <a href="about.html" class="dxt-mobile-link" style="--i: 2"><span class="dxt-mobile-idx">002</span><span class="dxt-mobile-txt">About Us</span></a>
+            <a href="index.html#process" class="dxt-mobile-link" style="--i: 3"><span class="dxt-mobile-idx">003</span><span class="dxt-mobile-txt">Process</span></a>
+            <a href="products.html" class="dxt-mobile-link" style="--i: 4"><span class="dxt-mobile-idx">004</span><span class="dxt-mobile-txt">Products</span></a>
+            <a href="#catalog" class="dxt-mobile-link" style="--i: 5"><span class="dxt-mobile-idx">005</span><span class="dxt-mobile-txt">Catalog</span></a>
+            <a href="index.html#estimator" class="dxt-mobile-link" style="--i: 6"><span class="dxt-mobile-idx">006</span><span class="dxt-mobile-txt">Estimate</span></a>
+            <a href="#site-footer" class="dxt-mobile-link talk-link" style="--i: 7"><span class="dxt-mobile-idx">007</span><span class="dxt-mobile-txt">Let's Talk</span></a>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="pt-40 pb-20 px-6 md:px-12 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="heading-xl mb-8">System Catalog.</h1>
+            <p class="text-body max-w-xl">
+                Explore our comprehensive range of architectural glass and aluminum systems. 
+                From standard fabrication to custom frameless solutions.
+            </p>
+        </div>
+    </header>
+
+    <!-- 1. FEATURED SYSTEMS (Detailed) -->
+    <section class="bg-white pb-32">
+        
+        <!-- Frameless Door -->
+        <div class="feature-row grid grid-cols-1 lg:grid-cols-2 group">
+            <div class="feature-img-wrap">
+                <img src="img/g1.png" class="feature-img">
+            </div>
+            <div class="p-8 md:p-20 flex flex-col justify-center bg-white">
+                <div class="text-xs font-bold tracking-widest uppercase opacity-40 mb-4">Minimalist Entry</div>
+                <h2 class="heading-lg mb-6">Frameless Glass Door</h2>
+                <p class="text-body mb-8">
+                    Enhance your space with our frameless glass door, combining modern elegance and functionality. 
+                    This minimalist design allows natural light while providing a stylish barrier. 
+                    Crafted for durability and safety, it’s perfect for contemporary homes and offices seeking sophistication.
+                </p>
+                <ul class="text-sm font-medium space-y-2 opacity-70">
+                    <li>• 10mm / 12mm Tempered Glass</li>
+                    <li>• Heavy Duty Patch Fittings</li>
+                    <li>• Optional Smart Lock Integration</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Shower Enclosure -->
+        <div class="feature-row grid grid-cols-1 lg:grid-cols-2 group">
+            <div class="p-8 md:p-20 flex flex-col justify-center bg-[#111] text-white order-2 lg:order-1">
+                <div class="text-xs font-bold tracking-widest uppercase opacity-40 mb-4">Modern Bath</div>
+                <h2 class="heading-lg mb-6">Frameless Shower Enclosure</h2>
+                <p class="text-body mb-8" style="color: #aaa;">
+                    Transform your bathroom with our frameless shower enclosure. This sleek design enhances your space while providing durability and a luxurious feel. Enjoy the perfect blend of style and functionality in your daily routine.
+                </p>
+                <ul class="text-sm font-medium space-y-2 opacity-70">
+                    <li>• Anti-Limescale Coating Available</li>
+                    <li>• Stainless Steel 304 Accessories</li>
+                    <li>• Custom sliding or swing configurations</li>
+                </ul>
+            </div>
+            <div class="feature-img-wrap order-1 lg:order-2">
+                <img src="img/g2.png" class="feature-img">
+            </div>
+        </div>
+
+        <!-- Railing -->
+        <div class="feature-row grid grid-cols-1 lg:grid-cols-2 group">
+            <div class="feature-img-wrap">
+                <img src="img/img4.jpg" class="feature-img">
+            </div>
+            <div class="p-8 md:p-20 flex flex-col justify-center bg-white border-b border-gray-100">
+                <div class="text-xs font-bold tracking-widest uppercase opacity-40 mb-4">Safety & View</div>
+                <h2 class="heading-lg mb-6">Glass Railing</h2>
+                <p class="text-body mb-8">
+                    Maximize your view without compromising safety. Our glass railing systems utilize thick tempered laminated glass with minimal hardware interference. Ideal for balconies, staircases, and pool fencing.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ALUMINUM SYSTEMS LIST -->
+    <section id="catalog" class="py-32 px-6 md:px-12 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div class="lg:col-span-4">
+                    <h2 class="heading-lg mb-4">Aluminum<br>Systems.</h2>
+                    <p class="text-sm text-gray-500 max-w-xs">High-grade extruded aluminum available in Powder Coated (any color) or Anodized Silver finishes.</p>
+                </div>
+                <div class="lg:col-span-8">
+                    <div id="aluminum-systems-list" class="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                        <div class="list-grid-item"><span>Loading systems...</span><div class="dot"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. GLASS SPECIFICATIONS -->
+    <section class="py-32 px-6 md:px-12 bg-white text-black">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="heading-lg mb-4 text-center">Glass Specifications.</h2>
+            <p class="text-body text-center max-w-3xl mx-auto mb-14">
+                Material options for different performance needs, from everyday installations to safety, insulation, and heat-control requirements.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="spec-card">
+                    <span class="spec-badge">Safety</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Tempered Glass</h3>
+                    <p class="text-sm text-gray-600">Heat-treated for 4x strength. Shatters into safe granules. Standard for doors & showers.</p>
+                </div>
+
+                <div class="spec-card">
+                    <span class="spec-badge">Security</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Laminated Glass</h3>
+                    <p class="text-sm text-gray-600">Two layers bonded with PVB. Stays intact when broken. Ideal for canopies and railings.</p>
+                </div>
+
+                <div class="spec-card">
+                    <span class="spec-badge">Energy</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Low-E Glass</h3>
+                    <p class="text-sm text-gray-600">Low-emissivity coating that reflects heat while letting light in. Energy efficient.</p>
+                </div>
+
+                <div class="spec-card">
+                    <span class="spec-badge">Comfort</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Insulated Glass</h3>
+                    <p class="text-sm text-gray-600">Double glazed unit with air space. Provides superior sound and heat insulation.</p>
+                </div>
+
+                <div class="spec-card">
+                    <span class="spec-badge">Solar Control</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Tinted / Reflective</h3>
+                    <p class="text-sm text-gray-600">Reduces glare and solar heat gain. Available in Bronze, Grey, Green, and Blue.</p>
+                </div>
+
+                <div class="spec-card">
+                    <span class="spec-badge">Standard</span>
+                    <h3 class="text-xl font-medium mb-2 text-black">Ordinary / Annealed</h3>
+                    <p class="text-sm text-gray-600">Standard glass. Can be cut and processed. Used for basic windows and louvers.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER LINK -->
+    <div class="py-24 bg-white text-center">
+        <h2 class="heading-lg mb-8">Ready to build?</h2>
+        <a href="index.html#estimator" class="inline-block px-10 py-4 bg-black text-white rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform">
+            Get Free Estimate
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <script>
+        const nav = document.getElementById('main-nav');
+        const mobileMenuBtn = document.getElementById('dxt-menu-btn');
+        const mobileMenuPanel = document.getElementById('dxt-mobile-panel');
+        const mobileMenuClose = document.getElementById('dxt-menu-close');
+        const PAGE_TRANSITION_MS = 480;
+
+        document.body.classList.add('page-enter');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.body.classList.remove('page-enter');
+            });
+        });
+
+        function scrollToHashTarget(rawHash, behavior = 'smooth') {
+            if (!rawHash || rawHash === '#') return false;
+            let target = null;
+            try {
+                target = document.querySelector(rawHash);
+            } catch (_) {
+                return false;
+            }
+            if (!target) return false;
+
+            const navHeight = nav ? nav.offsetHeight : 0;
+            const top = window.pageYOffset + target.getBoundingClientRect().top - navHeight - 12;
+            window.scrollTo({ top: Math.max(0, top), behavior });
+            history.replaceState(null, '', rawHash);
+            return true;
+        }
+
+        const wireNavPageTransition = () => {
+            document.querySelectorAll('.dxt-nav a[href], .dxt-mobile-panel a[href]').forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    if (event.defaultPrevented) return;
+                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                    if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+                    const rawHref = link.getAttribute('href');
+                    if (!rawHref) return;
+                    if (rawHref.startsWith('#')) {
+                        event.preventDefault();
+                        const moved = scrollToHashTarget(rawHref, 'smooth');
+                        if (!moved) {
+                            window.location.hash = rawHref;
+                        }
+                        return;
+                    }
+
+                    const targetUrl = new URL(link.href, window.location.href);
+                    if (targetUrl.origin !== window.location.origin) return;
+
+                    const samePath = targetUrl.pathname === window.location.pathname;
+                    if (samePath) return;
+
+                    event.preventDefault();
+                    document.body.classList.add('page-leave');
+                    setTimeout(() => {
+                        window.location.href = targetUrl.href;
+                    }, PAGE_TRANSITION_MS);
+                });
+            });
+        };
+        wireNavPageTransition();
+        if (window.location.hash) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    scrollToHashTarget(window.location.hash, 'auto');
+                }, 50);
+            }, { once: true });
+        }
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+        if (mobileMenuBtn && mobileMenuPanel) {
+            const setMenuState = (open) => {
+                mobileMenuPanel.classList.toggle('open', open);
+                mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                document.body.style.overflow = open ? 'hidden' : '';
+            };
+            mobileMenuBtn.addEventListener('click', () => {
+                const isOpen = !mobileMenuPanel.classList.contains('open');
+                setMenuState(isOpen);
+            });
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', () => setMenuState(false));
+            }
+            mobileMenuPanel.querySelectorAll('.dxt-mobile-link').forEach((link) => {
+                link.addEventListener('click', () => setMenuState(false));
+            });
+        }
+
+        const lenis = new Lenis({ duration: 1.2, smooth: true });
+        window.__jthLenis = lenis;
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        const aluminumListEl = document.getElementById('aluminum-systems-list');
+
+        const fallbackSystems = [
+            'Sliding Systems',
+            'Casement Systems',
+            'Awning Systems',
+            'Fixed Window Systems',
+            'Frameless Systems',
+            'Door Systems'
+        ];
+
+        function toTitleCase(value) {
+            return String(value || '')
+                .toLowerCase()
+                .split(/\s+/)
+                .filter(Boolean)
+                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(' ');
+        }
+
+        function normalizeLabel(value) {
+            return String(value || '')
+                .replace(/\s*\(set\s*[a-z0-9]+\)\s*$/i, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function makeNode(label) {
+            const item = document.createElement('div');
+            item.className = 'list-grid-item';
+
+            const span = document.createElement('span');
+            span.textContent = label;
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+
+            item.appendChild(span);
+            item.appendChild(dot);
+            return item;
+        }
+
+        function renderSystems(labels) {
+            if (!aluminumListEl) return;
+            aluminumListEl.innerHTML = '';
+            labels.forEach((label) => aluminumListEl.appendChild(makeNode(label)));
+        }
+
+        function collectSystemLabels(payload) {
+            if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+                return [];
+            }
+
+            const displayLabels = [];
+            const typeLabels = new Set();
+
+            for (const product of Object.values(payload)) {
+                if (!product || typeof product !== 'object') continue;
+
+                const displayName = normalizeLabel(product.display_name || '');
+                if (displayName) displayLabels.push(displayName);
+
+                const variants = product.variants;
+                if (!variants || typeof variants !== 'object') continue;
+
+                for (const variant of Object.values(variants)) {
+                    const type = String(variant?.product_type || '').trim();
+                    if (!type) continue;
+                    typeLabels.add(`${toTitleCase(type)} Systems`);
+                }
+            }
+
+            const cleanDisplay = Array.from(new Set(displayLabels))
+                .filter((label) => !/^unknown$/i.test(label))
+                .sort((a, b) => a.localeCompare(b));
+
+            const cleanTypes = Array.from(typeLabels).sort((a, b) => a.localeCompare(b));
+
+            return cleanTypes.length >= 4 ? cleanTypes : cleanDisplay;
+        }
+
+        async function loadAluminumSystems() {
+            try {
+                const res = await fetch('backend/get_options.php', { cache: 'no-store' });
+                if (!res.ok) throw new Error('Request failed');
+                const payload = await res.json();
+                const labels = collectSystemLabels(payload);
+                if (!labels.length) throw new Error('No systems found');
+                renderSystems(labels);
+            } catch (_) {
+                renderSystems(fallbackSystems);
+            }
+        }
+
+        loadAluminumSystems();
+    </script>
+    <div id="chat-widget-root"></div>
+    <script src="js/chat-widget.js"></script>
+    <div id="site-footer"></div>
+    <script src="js/footer.js"></script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>

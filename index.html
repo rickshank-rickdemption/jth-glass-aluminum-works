@@ -1,0 +1,2502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTH Glass & Aluminum | Architectural Systems</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-light: #FFF;
+            --bg-dark: #111111;
+            --text-dark: #111111;
+            --text-light: #F5F5F7;
+            --page-bg: #FFFFFF;
+        }
+            scroll-margin-top: 108px;
+        }
+        @media (max-width: 900px) {
+                scroll-margin-top: 84px;
+            }
+        }
+        html { scroll-behavior: smooth; }
+
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        html, body {
+            scrollbar-width: none !important; /* Firefox */
+            -ms-overflow-style: none !important; /* IE/Edge */
+        }
+        
+        body::-webkit-scrollbar, 
+        html::-webkit-scrollbar {
+            display: none !important; /* Chrome/Safari/Webkit */
+            width: 0 !important;
+            background: transparent !important;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--page-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            opacity: 1 !important;
+            visibility: visible !important;
+            -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
+            transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1), transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(0);
+        }
+        body.page-enter,
+        body.page-leave {
+            opacity: 0 !important;
+            transform: translateY(8px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body { transition: none; }
+        }
+
+        .nav-link {
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .nav-link:hover { color: #9CA3AF; }
+        .nav-link.active { color: #9CA3AF; font-weight: 400; }
+
+        .dxt-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            height: 84px;
+            display: grid;
+            grid-template-columns: 1.25fr repeat(5, 1fr) 1.05fr;
+            border-bottom: 1px solid #D3D6DE;
+            background: var(--page-bg);
+        }
+        .dxt-nav.scrolled { box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08); }
+        .dxt-nav-cell {
+            border-right: 1px solid #D9DCE4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+        .dxt-nav > .dxt-nav-cell:last-child {
+            border-right: 0;
+        }
+        .dxt-nav-cell.logo {
+            justify-content: flex-start;
+            padding-left: 20px;
+            line-height: 1;
+        }
+        .dxt-logo-img {
+            width: 124px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0);
+        }
+        .dxt-nav-link {
+            font-size: 34px;
+            letter-spacing: 0.01em;
+            color: #1F2937;
+            text-transform: uppercase;
+            transition: color .5s ease;
+            white-space: nowrap;
+            text-decoration: none;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .dxt-nav-link::before,
+        .dxt-nav-link::after {
+            content: "";
+            position: absolute;
+            height: 50%;
+            width: 0;
+            background-color: #000000;
+            transition: width .5s ease;
+            z-index: -1;
+        }
+        .dxt-nav-link::before { right: 0; top: 0; }
+        .dxt-nav-link::after { left: 0; bottom: 0; }
+        .dxt-nav-link:hover { color: #FFFFFF; }
+        .dxt-nav-link:hover::before,
+        .dxt-nav-link:hover::after { width: 100%; }
+        .dxt-nav-talk {
+            background: #111111;
+            color: #fff;
+            font-size: 34px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            font-weight: 500;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            transition: background .2s ease;
+        }
+        .dxt-nav-talk:hover { background: #000000; }
+        .dxt-mobile-toggle,
+        .dxt-mobile-panel {
+            display: none;
+        }
+        .dxt-menu-btn {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+        }
+        .dxt-menu-icon {
+            width: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .dxt-menu-icon span {
+            display: block;
+            height: 2px;
+            background: #111111;
+            border-radius: 999px;
+        }
+        .dxt-mobile-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            background-color: #000000;
+            background-image: repeating-linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0.10) 0 1px,
+                transparent 1px 120px
+            );
+            color: #ffffff;
+            padding: 14px 16px 18px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.4s;
+        }
+        .dxt-mobile-panel.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+        }
+        .dxt-mobile-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .dxt-mobile-brand {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .dxt-mobile-logo-img {
+            width: 96px;
+            height: auto;
+            display: block;
+            filter: grayscale(1) brightness(0) invert(1);
+        }
+        .dxt-mobile-close {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: transparent;
+            position: relative;
+            cursor: pointer;
+        }
+        .dxt-mobile-close::before,
+        .dxt-mobile-close::after {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 16px;
+            width: 20px;
+            height: 2px;
+            background: #ffffff;
+        }
+        .dxt-mobile-close::before {
+            transform: rotate(45deg);
+        }
+        .dxt-mobile-close::after {
+            transform: rotate(-45deg);
+        }
+        .dxt-mobile-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dxt-mobile-link {
+            display: grid;
+            gap: 3px;
+            color: #ffffff;
+            padding: 6px 0;
+            border-top: 0;
+            text-transform: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .dxt-mobile-panel.open .dxt-mobile-link {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: calc(var(--i, 1) * 32ms);
+        }
+        .dxt-mobile-idx {
+            font-size: 12px;
+            opacity: 0.65;
+            letter-spacing: 0.06em;
+            line-height: 1;
+        }
+        .dxt-mobile-txt {
+            font-size: 46px;
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+        .dxt-mobile-link.talk-link {
+            margin-top: 6px;
+        }
+        .dxt-mobile-footer-meta {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.16);
+            display: grid;
+            gap: 10px;
+        }
+        .dxt-mobile-meta-row {
+            display: grid;
+            grid-template-columns: 96px 1fr;
+            gap: 8px;
+            align-items: start;
+        }
+        .dxt-mobile-meta-label {
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.56);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .dxt-mobile-meta-value,
+        .dxt-mobile-meta-value a {
+            font-size: 14px;
+            color: rgba(255,255,255,0.92);
+            line-height: 1.45;
+            text-decoration: none;
+        }
+        .dxt-mobile-meta-value a:hover { color: #ffffff; }
+        .dxt-mobile-meta-links {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.35rem;
+            align-items: start;
+        }
+        .dxt-mobile-meta-link {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            color: rgba(255,255,255,0.92);
+        }
+        @media (max-width: 1280px) {
+            .dxt-nav { height: 74px; grid-template-columns: 1.3fr repeat(3, 1fr) 1.05fr; }
+            .dxt-nav-cell.hide-lg { display: none; }
+            .dxt-nav-cell.logo { font-size: 34px; }
+            .dxt-nav-link, .dxt-nav-talk { font-size: 24px; }
+        }
+        @media (max-width: 900px) {
+            .dxt-nav { height: 64px; grid-template-columns: 1fr 104px 120px; }
+            .dxt-nav-cell.menu-cell { display: none; }
+            .dxt-nav-cell.logo { border-right: 1px solid #D9DCE4; }
+            .dxt-logo-img { width: 92px; }
+            .dxt-mobile-toggle { display: flex; }
+            .dxt-mobile-panel { display: block; }
+            .dxt-nav-talk {
+                font-size: 0;
+                padding: 0;
+                position: relative;
+            }
+            .dxt-nav-talk::before {
+                content: "";
+                width: 20px;
+                height: 16px;
+                border: 2px solid #FFFFFF;
+                border-radius: 3px;
+                position: absolute;
+            }
+            .dxt-nav-talk::after {
+                content: "";
+                position: absolute;
+                width: 7px;
+                height: 7px;
+                border-left: 2px solid #FFFFFF;
+                border-bottom: 2px solid #FFFFFF;
+                transform: rotate(-45deg);
+                margin-top: 12px;
+                margin-left: -8px;
+            }
+            .dxt-mobile-txt {
+                font-size: clamp(34px, 8.5vw, 52px);
+            }
+        }
+
+
+        .heading-hero {
+            font-size: clamp(3rem, 6vw, 7rem);
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+        
+        .heading-section {
+            font-size: clamp(2rem, 3.5vw, 4rem);
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .about-heading-boost {
+            font-size: clamp(2.2rem, 3.9vw, 4.4rem);
+            font-weight: 400;
+        }
+
+        .text-body {
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            font-weight: 300;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .dxt-hero {
+            position: relative;
+            min-height: 100vh;
+            padding: 102px 1.5rem 1.5rem;
+            background-color: var(--page-bg);
+            overflow: hidden;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+        }
+        .dxt-grid {
+            display: grid;
+            grid-template-columns: 1.18fr 1fr;
+            gap: 1.05rem;
+            min-height: calc(100vh - 125px);
+        }
+        .dxt-left,
+        .dxt-right {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1.2rem;
+        }
+        .dxt-images-mobile .dxt-img-wrap.top {
+            display: none;
+        }
+        .dxt-desktop-top-image {
+            display: block;
+        }
+        .dxt-title {
+            margin: 0;
+            font-size: clamp(3.1rem, 8.8vw, 8.7rem);
+            line-height: 0.86;
+            letter-spacing: -0.03em;
+            color: #111111;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+        .dxt-title.secondary {
+            text-align: right;
+        }
+        .dxt-img-wrap {
+            position: relative;
+            overflow: hidden;
+            background: #DCE4F1;
+            border: 1px solid rgba(27, 44, 94, 0.14);
+        }
+        .dxt-img-wrap.top {
+            width: min(92%, 640px);
+            margin-left: auto;
+            height: clamp(180px, 32vh, 420px);
+        }
+        .dxt-img-wrap.bottom {
+            width: min(72%, 460px);
+            height: clamp(170px, 35vh, 390px);
+        }
+        .dxt-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.75) contrast(1.02);
+        }
+        .dxt-kicker {
+            color: #222222;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .dxt-pill {
+            align-self: flex-end;
+            border: 1px solid #111111;
+            color: #111111;
+            border-radius: 999px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 9px 16px;
+            transition: all 0.2s ease;
+        }
+        .dxt-pill:hover {
+            background: #111111;
+            color: #fff;
+        }
+        @media (max-width: 980px) {
+            .dxt-grid {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                gap: 1rem;
+            }
+            .dxt-right { align-items: stretch; }
+            .dxt-title.secondary { text-align: left; }
+            .dxt-img-wrap.top,
+            .dxt-img-wrap.bottom {
+                width: 100%;
+            }
+            .dxt-pill { align-self: flex-start; }
+            .dxt-title { font-size: clamp(2.5rem, 12vw, 5.2rem); }
+        }
+        @media (max-width: 900px) {
+            .dxt-hero {
+                padding: 90px 1rem 1.2rem;
+                min-height: auto;
+            }
+            .dxt-grid {
+                min-height: auto;
+            }
+            .dxt-kicker {
+                display: none;
+            }
+            .dxt-left,
+            .dxt-right {
+                gap: 0.9rem;
+            }
+            .dxt-title {
+                font-size: clamp(1.95rem, 10.2vw, 3.1rem);
+                line-height: 0.9;
+                letter-spacing: -0.02em;
+            }
+            .dxt-title.secondary {
+                text-align: right;
+                margin-left: auto;
+                width: min(100%, 330px);
+                overflow-wrap: anywhere;
+            }
+            .dxt-right {
+                justify-content: flex-start;
+            }
+            .dxt-images-mobile .dxt-img-wrap.top {
+                display: block;
+            }
+            .dxt-desktop-top-image {
+                display: none;
+            }
+            .dxt-images-mobile {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.7rem;
+                align-items: start;
+            }
+            .dxt-img-wrap.top,
+            .dxt-img-wrap.bottom {
+                height: 140px;
+            }
+            .dxt-img-wrap.top {
+                margin-left: 0;
+            }
+            .dxt-img-wrap.bottom {
+                transform: translateY(-10px);
+            }
+            .dxt-pill {
+                display: none;
+            }
+        }
+
+
+        .btn-pill {
+            border: 1px solid currentColor;
+            padding: 14px 36px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex; align-items: center; gap: 10px;
+            position: relative; overflow: hidden;
+            cursor: pointer;
+        }
+        .btn-pill:hover {
+            background: var(--text-dark);
+            color: var(--text-light);
+            border-color: var(--text-dark);
+            padding-right: 42px;
+        }
+        .btn-pill.light { border-color: rgba(255,255,255,0.3); color: white; }
+        .btn-pill.light:hover { background: white; color: black; border-color: white; }
+        
+        .btn-pill.btn-contrast { background-color: white; color: black; border-color: white; }
+        .btn-pill.btn-contrast:hover { background-color: #e5e5e5; color: black; border-color: #e5e5e5; }
+
+        .word-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
+        .word-inner { display: inline-block; transform: translateY(0); }
+        .img-parallax-wrap { overflow: hidden; position: relative; transform: translateZ(0); }
+        
+        .img-parallax { 
+            transform: scale(1.2); 
+            will-change: transform; 
+            backface-visibility: hidden;
+            image-rendering: -webkit-optimize-contrast;
+        }
+        .vibrant-filter {
+            filter: grayscale(1);
+        }
+
+
+        .capsule-section {
+            background: #FFFFFF;
+            color: #111111;
+            padding: 2rem 1.5rem 3rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        }
+        .capsule-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+            color: #4B5563;
+            font-size: 1.08rem;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        .capsule-topbar .label {
+            opacity: 0.6;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .capsule-heading {
+            font-size: clamp(3rem, 11.2vw, 10rem);
+            line-height: 0.88;
+            letter-spacing: -0.03em;
+            font-weight: 400;
+            margin: 0 0 2.2rem;
+            color: #111111;
+        }
+        .capsule-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+        .capsule-left {
+            color: #2D2D2D;
+            font-size: clamp(1.45rem, 3.5vw, 3.5rem);
+            line-height: 1.05;
+            font-weight: 400;
+            max-width: 17ch;
+        }
+        .capsule-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+        }
+        .capsule-note {
+            color: #374151;
+            font-size: 1.22rem;
+            max-width: 30ch;
+            line-height: 1.35;
+        }
+        .capsule-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.95rem;
+        }
+        .capsule-chip {
+            border: 1px solid rgba(17, 17, 17, 0.35);
+            border-radius: 999px;
+            padding: 0.62rem 1.42rem;
+            color: #111111;
+            font-size: clamp(1.14rem, 2.8vw, 1.9rem);
+            line-height: 1.2;
+            white-space: nowrap;
+            transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .capsule-chip:hover {
+            border-color: #111111;
+            background: #111111;
+            color: #FFFFFF;
+        }
+        @media (min-width: 980px) {
+            .capsule-section {
+                padding: 2.4rem 2.4rem 3.2rem;
+            }
+            .capsule-grid {
+                grid-template-columns: minmax(320px, 1fr) minmax(280px, 1fr);
+                align-items: end;
+                gap: 2.4rem;
+            }
+            .capsule-topbar {
+                margin-bottom: 1.9rem;
+            }
+        }
+
+        .catalog-stack-section { background-color: var(--page-bg); position: relative; padding: 10vh 0; }
+        .catalog-container { max-width: 1400px; margin: 0 auto; padding: 0 5vw; position: relative; display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+        .stack-text-col { position: relative; z-index: 20; padding-top: 5vh; }
+        .stack-cards-col { position: relative; display: grid; gap: 1.4rem; }
+        .stack-card { position: relative; width: 100%; height: 62vh; background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.1); transform-origin: center top; will-change: transform, filter; }
+        .stack-card:nth-child(2) { margin-left: 6%; width: 94%; }
+        .stack-card:nth-child(3) { margin-left: 12%; width: 88%; }
+        .stack-img { width: 100%; height: 75%; object-fit: cover; filter: grayscale(100%); transition: filter 0.5s; }
+        .stack-card:hover .stack-img { filter: grayscale(0%); }
+        .stack-content { position: absolute; bottom: 0; left: 0; width: 100%; height: 25%; padding: 2rem 2.5rem; background: white; color: #111; display: flex; flex-direction: column; justify-content: center; }
+        @media(max-width: 1024px) {
+            .catalog-container { grid-template-columns: 1fr; }
+            .stack-text-col { margin-bottom: 2rem; }
+            .stack-cards-col { gap: 1rem; }
+            .stack-card { height: 60vh; margin-left: 0 !important; width: 100% !important; }
+        }
+
+        .faq-manifesto {
+            background: #FFFFFF;
+            background-color: #FFFFFF !important;
+            color: #111111;
+            padding: 2.6rem 1.5rem 3.2rem;
+        }
+        .faq-manifesto-inner {
+            width: min(1400px, 100%);
+            margin: 0 auto;
+        }
+        .faq-headline {
+            font-size: clamp(1.7rem, 3.1vw, 2.65rem);
+            letter-spacing: -0.02em;
+            margin: 0 0 1.8rem;
+            font-weight: 500;
+        }
+        .faq-row {
+            border-top: 1px solid rgba(0, 0, 0, 0.16);
+        }
+        .faq-row:last-child {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+        }
+        .faq-item {
+            padding: 2.05rem 0;
+            cursor: pointer;
+        }
+        .faq-item-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .faq-item-title h3 {
+            margin: 0;
+            color: #111111;
+            font-size: clamp(1.4rem, 2.15vw, 2.25rem);
+            font-weight: 400;
+            letter-spacing: -0.015em;
+            text-transform: uppercase;
+        }
+        .faq-icon {
+            font-size: clamp(1.7rem, 2.4vw, 2.6rem);
+            color: #111111;
+            line-height: 1;
+            transition: transform 0.3s ease;
+            font-weight: 300;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .faq-item.active .faq-answer {
+            max-height: 420px;
+        }
+        .faq-answer-inner {
+            padding: 1.1rem 0 0.2rem;
+            color: #444444;
+            font-size: clamp(1rem, 1.24vw, 1.35rem);
+            line-height: 1.46;
+            max-width: 86ch;
+        }
+        @media (max-width: 900px) {
+            .faq-manifesto { padding: 2rem 1rem 2.6rem; }
+            .faq-item { padding: 1.45rem 0; }
+            .faq-answer-inner { max-width: 100%; }
+        }
+
+        .footer-dark { background-color: #151515; color: white; padding: 8rem 4rem 4rem 4rem; position: relative; }
+        .footer-heading { font-size: clamp(3rem, 5vw, 6rem); font-weight: 300; letter-spacing: -0.03em; margin-bottom: 6rem; }
+        .footer-input-group { margin-bottom: 2.5rem; }
+        .footer-label { font-size: 0.8rem; color: rgba(255,255,255,0.6); display: block; margin-bottom: 0.5rem; }
+        .footer-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 10px 0; color: white; font-size: 1rem; font-weight: 300; outline: none; transition: border-color 0.3s; }
+        .footer-input:focus { border-bottom-color: white; }
+        .capitalize-text { text-transform: capitalize; }
+
+        .chat-fab {
+            position: fixed;
+            left: auto;
+            right: 60px;
+            bottom: 150px;
+            transform: none;
+            z-index: 130;
+            width: 58px;
+            height: 58px;
+            padding: 0;
+            border-radius: 999px;
+            border: 1px solid #D1D5DB;
+            background: #FFFFFF;
+            color: #111111;
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 14px 30px -18px rgba(0,0,0,0.42);
+            transition: transform .22s ease, box-shadow .22s ease, background .22s ease, color .22s ease, border-color .22s ease;
+        }
+        .chat-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 34px -18px rgba(0,0,0,0.45);
+            border-color: #9CA3AF;
+        }
+        .chat-fab-icon {
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .chat-fab-dots {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            opacity: 0;
+            transform: translate(-50%, calc(-50% + 2px)) scale(0.95);
+            transition: opacity .2s ease, transform .2s ease;
+            pointer-events: none;
+        }
+        .chat-fab-dots span {
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: #111111;
+            animation: chatTyping 1s ease-in-out infinite;
+        }
+        .chat-fab-dots span:nth-child(2) { animation-delay: .15s; }
+        .chat-fab-dots span:nth-child(3) { animation-delay: .3s; }
+        .chat-fab:hover .chat-fab-icon {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .chat-fab:hover .chat-fab-dots {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        @keyframes chatTyping {
+            0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
+            40% { opacity: 1; transform: translateY(-2px); }
+        }
+        .chat-panel {
+            position: fixed;
+            left: auto;
+            right: 9px;
+            bottom: 172px;
+            transform: none;
+            width: min(380px, calc(100vw - 28px));
+            height: min(520px, calc(100vh - 190px));
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+            z-index: 130;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 30px 46px -26px rgba(0,0,0,0.45);
+        }
+        .chat-panel.open { display: flex; }
+        .chat-head {
+            padding: 12px 14px;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #FFFFFF;
+        }
+        .chat-title { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: #111; }
+        .chat-close { border: 0; background: transparent; color: #6B7280; font-size: 20px; line-height: 1; cursor: pointer; }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            background: #FAFAFA;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .chat-bubble {
+            max-width: 88%;
+            padding: 9px 11px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+        .chat-bubble.bot { align-self: flex-start; background: #FFFFFF; border: 1px solid #E5E7EB; color: #1F2937; }
+        .chat-bubble.user { align-self: flex-end; background: #111111; color: #FFFFFF; }
+        .chat-foot {
+            border-top: 1px solid #E5E7EB;
+            background: #FFFFFF;
+            padding: 10px;
+        }
+        .chat-form { display: flex; gap: 8px; }
+        .chat-input {
+            flex: 1;
+            border: 1px solid #D1D5DB;
+            border-radius: 999px;
+            padding: 9px 12px;
+            font-size: 13px;
+            outline: none;
+        }
+        .chat-input:focus { border-color: #111111; }
+        .chat-send {
+            border: 1px solid #111111;
+            border-radius: 999px;
+            padding: 9px 13px;
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            background: #111111;
+            color: #FFFFFF;
+        }
+        .chat-note { margin-top: 7px; font-size: 10px; color: #6B7280; }
+        @media (max-width: 767px) {
+            .chat-fab { left: auto; right: 9px; bottom: 96px; width: 52px; height: 52px; padding: 0; border-radius: 999px; transform: none; }
+            .chat-panel { left: auto; right: 9px; bottom: 150px; width: calc(100vw - 20px); transform: none; }
+        }
+        
+        .footer-submit-btn { border: 1px solid white; padding: 12px 36px; border-radius: 100px; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.3s; display: inline-block; margin-top: 1rem; }
+        .footer-submit-btn:hover { background: white; color: black; }
+        .footer-brand { font-size: clamp(4rem, 10vw, 12rem); font-weight: 200; line-height: 1; letter-spacing: -0.04em; margin-top: 8rem; margin-bottom: 1rem; color: rgba(255,255,255,0.9); }
+        .footer-sub { font-size: 1.5rem; font-weight: 300; color: rgba(255,255,255,0.6); }
+        .footer-legal { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4rem; padding-top: 2rem; font-size: 0.75rem; color: rgba(255,255,255,0.4); display: flex; justify-content: space-between; }
+        @media(max-width: 768px) { .footer-dark { padding: 4rem 2rem; } }
+
+        .input-minimal { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 12px 0; font-size: 1.1rem; outline: none; transition: border 0.3s; }
+        .input-minimal:focus { border-bottom: 1px solid black; }
+        .dark-theme .input-minimal { border-bottom: 1px solid rgba(255,255,255,0.2); color: white; }
+        .dark-theme .input-minimal:focus { border-bottom: 1px solid white; }
+        .input-minimal option { color: black; }
+        .estimator-box { background-color: #FFFFFF; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        .input-light-mode { color: #111; border-bottom: 1px solid rgba(0,0,0,0.2); }
+        .input-light-mode:focus { border-bottom: 1px solid black; }
+        
+        .process-card {
+            border: 1px solid #E5E5E5;
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 4px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .process-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.1);
+        }
+
+        
+        .schematic-box {
+            position: relative; width: 120px; height: 80px;
+            border: 1px solid rgba(0,0,0,0.1);
+            margin: 0 auto;
+            transition: all 0.5s ease;
+        }
+        .process-card:hover .schematic-box { border-color: rgba(0,0,0,0.8); width: 140px; height: 90px; }
+        
+        .dim-line { position: absolute; background: #000; transition: all 0.5s ease; }
+        .dim-line.top { top: -10px; left: 0; width: 100%; height: 1px; }
+        .dim-line.right { top: 0; right: -10px; height: 100%; width: 1px; }
+        
+        .cursor-blink { animation: blink 1s step-end infinite; display: inline-block; width: 2px; height: 1em; background: black; vertical-align: middle; margin-left: 2px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .submit-anim-wrap {
+            position: relative;
+            width: 160px; height: 54px;
+            border: 1px solid rgba(0,0,0,0.1); /* Light Border */
+            color: #111; /* Dark Text */
+            border-radius: 100px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            transition-delay: 0s, 1.4s, 1.4s;
+        }
+        
+        .txt-book { 
+            position: absolute; 
+            transition: all 0.4s ease; 
+            display: flex; align-items: center; gap: 8px; 
+            font-size: 0.9rem; letter-spacing: 0.05em; font-weight: 500;
+        }
+        
+        .loader-ring {
+            position: absolute;
+            width: 20px; height: 20px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top-color: #000; /* Dark Spinner */
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .txt-success { 
+            position: absolute; 
+            transform: translateY(30px); 
+            opacity: 0; 
+            display: flex; align-items: center; gap: 8px; 
+            font-weight: 700; font-size: 0.9rem;
+        }
+
+        .process-card:hover .submit-anim-wrap {
+            border-color: #22c55e;
+            background-color: #22c55e;
+            color: white; /* Text turns white */
+            transition-delay: 0s, 1.2s, 1.2s; 
+        }
+
+        .process-card:hover .txt-book { 
+            transform: translateY(-40px); 
+            opacity: 0; 
+        }
+
+        .process-card:hover .loader-ring {
+            border-color: rgba(255,255,255,0.3);
+            border-top-color: white; /* Switch to white spinner on green bg if animation lingers */
+            animation: submit-sequence 1.2s forwards;
+        }
+
+        .process-card:hover .txt-success {
+            animation: slide-in-success 0.4s 1.2s forwards;
+        }
+
+        @keyframes submit-sequence {
+            0% { opacity: 0; transform: rotate(0deg); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: rotate(360deg); }
+        }
+        
+        @keyframes slide-in-success {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body> 
+    <nav id="main-nav" class="dxt-nav">
+        <div class="dxt-nav-cell logo">
+            <a href="index.html" class="leading-none" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-logo-img">
+            </a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="index.html" class="dxt-nav-link">Home</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="about.html" class="dxt-nav-link">About</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell">
+            <a href="#process" class="dxt-nav-link">Process</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="products.html" class="dxt-nav-link">Catalog</a>
+        </div>
+        <div class="dxt-nav-cell menu-cell hide-lg">
+            <a href="#estimator" class="dxt-nav-link">Estimate</a>
+        </div>
+        <div class="dxt-nav-cell dxt-mobile-toggle">
+            <button id="dxt-menu-btn" class="dxt-menu-btn" aria-label="Open menu" aria-expanded="false">
+                <span class="dxt-menu-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+        </div>
+        <div class="dxt-nav-cell">
+            <a href="#site-footer" class="dxt-nav-talk">Let's Talk</a>
+        </div>
+    </nav>
+    <div id="dxt-mobile-panel" class="dxt-mobile-panel">
+        <div class="dxt-mobile-head">
+            <a href="index.html" class="dxt-mobile-brand" aria-label="JTH Home">
+                <img src="img/jth-logo.png" alt="JTH Logo" class="dxt-mobile-logo-img">
+            </a>
+            <button id="dxt-menu-close" class="dxt-mobile-close" aria-label="Close menu"></button>
+        </div>
+        <div class="dxt-mobile-links">
+            <a href="index.html" class="dxt-mobile-link" style="--i: 1"><span class="dxt-mobile-idx">001</span><span class="dxt-mobile-txt">Home</span></a>
+            <a href="about.html" class="dxt-mobile-link" style="--i: 2"><span class="dxt-mobile-idx">002</span><span class="dxt-mobile-txt">About Us</span></a>
+            <a href="#process" class="dxt-mobile-link" style="--i: 3"><span class="dxt-mobile-idx">003</span><span class="dxt-mobile-txt">Process</span></a>
+            <a href="products.html" class="dxt-mobile-link" style="--i: 4"><span class="dxt-mobile-idx">004</span><span class="dxt-mobile-txt">Products</span></a>
+            <a href="products.html" class="dxt-mobile-link" style="--i: 5"><span class="dxt-mobile-idx">005</span><span class="dxt-mobile-txt">Catalog</span></a>
+            <a href="#estimator" class="dxt-mobile-link" style="--i: 6"><span class="dxt-mobile-idx">006</span><span class="dxt-mobile-txt">Estimate</span></a>
+            <a href="#site-footer" class="dxt-mobile-link talk-link" style="--i: 7"><span class="dxt-mobile-idx">007</span><span class="dxt-mobile-txt">Let's Talk</span></a>
+        </div>
+        <div class="dxt-mobile-footer-meta">
+            <div class="dxt-mobile-meta-row">
+                <div class="dxt-mobile-meta-label">Contact</div>
+                <div class="dxt-mobile-meta-value">
+                    <div><a href="tel:+639163395673">0916 339 5673</a></div>
+                    <div><a href="tel:+63287497750">(02) 8749 7750</a></div>
+                    <div><a href="mailto:jthglass.aluminumworks.biz@gmail.com">jthglass.aluminumworks.biz@gmail.com</a></div>
+                </div>
+            </div>
+            <div class="dxt-mobile-meta-row">
+                <div class="dxt-mobile-meta-label">Office</div>
+                <div class="dxt-mobile-meta-value">142 M. Dela Fuente St, Sampaloc, Manila</div>
+            </div>
+            <div class="dxt-mobile-meta-row">
+                <div class="dxt-mobile-meta-label">Links</div>
+                <div class="dxt-mobile-meta-value dxt-mobile-meta-links">
+                    <a class="dxt-mobile-meta-link" href="privacy-policy.html">Privacy Policy</a>
+                    <a class="dxt-mobile-meta-link" href="terms-conditions.html">Terms</a>
+                    <a class="dxt-mobile-meta-link" href="track-booking.html">Track Booking</a>
+                    <a class="dxt-mobile-meta-link" href="https://www.facebook.com/people/JTH-Glass-and-Aluminum-Works/61556641336145/" target="_blank" rel="noopener noreferrer">Facebook</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <section class="dxt-hero">
+        <div class="dxt-grid">
+            <div class="dxt-left">
+                <div class="reveal-item">
+                    <p class="dxt-kicker">JTH Glass & Aluminum Works</p>
+                    <h1 class="dxt-title text-split-anim">
+                        Glass and<br>Aluminum<br>Facade Works
+                    </h1>
+                </div>
+                <div class="dxt-images-mobile">
+                    <div class="dxt-img-wrap bottom img-parallax-wrap reveal-scale">
+                        <img src="https://images.pexels.com/photos/2098782/pexels-photo-2098782.jpeg" class="img-parallax" alt="Glass Facade Project">
+                    </div>
+                    <div class="dxt-img-wrap top img-parallax-wrap reveal-scale">
+                        <img src="https://images.pexels.com/photos/259919/pexels-photo-259919.jpeg" class="img-parallax" alt="Aluminum Building Detail">
+                    </div>
+                </div>
+            </div>
+            <div class="dxt-right">
+                <div class="dxt-img-wrap top img-parallax-wrap reveal-scale dxt-desktop-top-image">
+                    <img src="https://images.pexels.com/photos/259919/pexels-photo-259919.jpeg" class="img-parallax" alt="Aluminum Building Detail">
+                </div>
+                <h2 class="dxt-title secondary text-fade-anim">
+                    Fabrication<br>Installation<br>and Repair
+                </h2>
+                <a href="#estimator" class="dxt-pill mag-btn">Get Instant Quotation</a>
+            </div>
+        </div>
+    </section>
+
+    
+    <section id="about" class="py-32 px-6 md:px-12 bg-white">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+            <div class="lg:col-span-7">
+                <div class="text-xs font-bold tracking-widest opacity-60 uppercase mb-4 text-fade-scroll">Architectural Systems</div>
+                <h2 class="heading-section about-heading-boost text-split-scroll">
+                    Crafting transparency through <br>precision engineering and <br>architectural innovation.
+                </h2>
+            </div>
+            <div class="lg:col-span-5 flex items-end">
+                <p class="text-body text-fade-scroll">
+                    Every JTH project begins with a vision. We collaborate closely with architects and homeowners to deliver glass systems that define modern living.
+                </p>
+            </div>
+        </div>
+        
+        <div class="relative w-full h-[70vh] overflow-hidden rounded-sm group img-parallax-wrap">
+            
+           <img src="img/hahha.png" class="w-full h-full object-cover img-parallax vibrant-filter">
+        </div>
+        
+        <div class="flex flex-col md:flex-row justify-between items-end mt-4 pt-4 border-t border-black/10 text-fade-scroll">
+            <div class="flex items-center gap-6 text-sm font-medium w-full md:w-auto">
+                <span class="opacity-80">Quezon City Project</span>
+                <div class="h-[1px] w-24 bg-black/20"></div>
+                <span class="opacity-50">2024</span>
+            </div>
+            
+            <a href="about.html" class="btn-pill mt-4 md:mt-0 mag-btn">
+                About JTH <span>↗</span>
+            </a>
+        </div>
+    </section>
+
+    
+    <section id="journey" class="capsule-section">
+        <div class="capsule-topbar">
+            <div class="label">Discover JTH Glass & Aluminum Systems</div>
+        </div>
+        <h2 class="capsule-heading">
+            Choose the one<br>you need best
+        </h2>
+        <div class="capsule-grid">
+            <p class="capsule-left">
+                You can choose from our custom glass and aluminum solutions. 
+            </p>
+            <div class="capsule-right">
+                <p class="capsule-note">All JTH installations follow the same quality standards:</p>
+                <div class="capsule-chips">
+                    <span class="capsule-chip">Safety-Rated</span>
+                    <span class="capsule-chip">Weather-Sealed</span>
+                    <span class="capsule-chip">Low-Maintenance</span>
+                    <span class="capsule-chip">Custom Fit</span>
+                    <span class="capsule-chip">Premium Finish</span>
+                    <span class="capsule-chip">Glass & Aluminum</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="process" class="py-20 md:py-32 px-6 md:px-12 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
+                <h2 class="heading-section mb-20">
+                    <span class="text-split-scroll">From concept to<br>installation in</span>
+                    <span class="block text-gray-400 italic text-fade-scroll">one flow.</span>
+                </h2>
+                <div class="flex flex-col justify-end">
+                    <p class="text-body text-fade-scroll">
+                        We've digitized the glass fabrication industry. Our simplified 3-step process eliminates back-and-forth messaging and provides you with instant, accurate pricing based on real measurements.
+                    </p>
+                </div>
+            </div>
+
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 border-t border-black/10 pt-12">
+                
+                
+                <div class="card-anim h-full">
+                    <div class="process-card group hover:border-black/50">
+                        <div class="text-xs font-bold uppercase tracking-widest opacity-40 mb-6 group-hover:text-blue-600 group-hover:opacity-100 transition-colors">01. Measure</div>
+                        
+                        
+                        <div class="h-40 flex items-center justify-center mb-6">
+                            <div class="schematic-box flex items-center justify-center">
+                                <div class="dim-line top"></div>
+                                <div class="dim-line right"></div>
+                                <span class="font-mono text-xs opacity-50">AREA</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-2xl font-medium mb-3">Input Dimensions</h3>
+                            <p class="text-sm text-gray-500 leading-relaxed">
+                                Select your product and input height & width. Our guide helps you measure correctly.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card-anim h-full">
+                    <div class="process-card group hover:border-black/50">
+                        <div class="text-xs font-bold uppercase tracking-widest opacity-40 mb-6 group-hover:text-blue-600 group-hover:opacity-100 transition-colors">02. Calculate</div>
+                        
+                        
+                        <div class="h-40 flex flex-col items-center justify-center mb-6">
+                            <div class="text-xs font-mono mb-2 opacity-50">TOTAL ESTIMATE</div>
+                            <div class="text-4xl font-light tracking-tight flex items-center">
+                                ₱5,600<div class="cursor-blink"></div>
+                            </div>
+                            <div class="text-[0.6rem] uppercase tracking-widest text-green-600 mt-2 bg-green-50 px-2 py-1 rounded">● Auto-Generated</div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-2xl font-medium mb-3">Instant Quotation</h3>
+                            <p class="text-sm text-gray-500 leading-relaxed">
+                                Get a generated quotation ID immediately based on our formula. No waiting.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card-anim h-full">
+                    <div class="process-card group hover:border-black/50">
+                        <div class="text-xs font-bold uppercase tracking-widest opacity-40 mb-6 relative z-10 group-hover:text-green-600 group-hover:opacity-100 transition-colors">03. Book</div>
+                        
+                        
+                        <div class="h-40 flex items-center justify-center mb-6 relative z-10">
+                            
+                            <div class="submit-anim-wrap">
+                                
+                                <div class="txt-book">
+                                    Book Slot <span class="text-lg">→</span>
+                                </div>
+                                
+                                <div class="loader-ring"></div>
+                                
+                                <div class="txt-success">
+                                    CONFIRMED <span class="text-xl">✓</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="relative z-10">
+                            <h3 class="text-2xl font-medium mb-3">Seamless Booking</h3>
+                            <p class="text-sm text-gray-500 leading-relaxed">
+                                Convert your quote into a booking instantly. Select your date and wait for our team.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+     <section id="estimator" class="bg-white text-black py-20 md:py-32 px-6 md:px-12 w-full overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center mb-10 md:mb-16">
+            <h2 class="heading-section mb-6 text-split-scroll">Instant Quotation.</h2>
+            <p class="text-lg font-light opacity-60 max-w-2xl mx-auto text-fade-scroll">Get a preliminary estimate for your project in seconds. Final price subject to site measurement.</p>
+        </div>
+        
+        <form id="calculatorForm" class="max-w-5xl mx-auto estimator-box p-8 md:p-16 rounded-2xl relative overflow-hidden bg-white shadow-xl border border-gray-100">
+            
+            <div id="loading-overlay" class="absolute inset-0 bg-white/80 z-20 flex items-center justify-center backdrop-blur-sm transition-opacity">
+                <span class="text-xs font-bold uppercase tracking-widest animate-pulse">Syncing Products...</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 relative z-10">
+                
+                <!-- Left Column: Product Selection -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-xs font-bold uppercase tracking-widest opacity-50 mb-2 block">1. Select Series / Category</label>
+                        <select id="sel-category" class="input-minimal w-full font-medium">
+                            <option value="">Choose an option...</option> 
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold uppercase tracking-widest opacity-50 mb-2 block">2. Select Glass & Color</label>
+                        <select id="sel-variant" class="input-minimal w-full text-gray-500" disabled>
+                            <option value="">(Choose Category First)</option>
+                        </select>
+                    </div>
+                    <div class="pt-2">
+                        <button type="button" id="btn-add-item" class="h-9 px-4 text-xs font-semibold rounded-full border border-black text-black hover:bg-black hover:text-white transition">
+                            Add This Item
+                        </button>
+                    </div>
+                    <input type="checkbox" id="chk-screen" class="hidden" disabled>
+                    <label for="chk-screen" id="lbl-screen" class="hidden">Add Insect Screen</label>
+                </div>
+
+                <!-- Right Column: Dimensions & Price -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-xs font-bold uppercase tracking-widest opacity-50 mb-2 block">3. Input Dimensions</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-sm font-medium">Width (ft)</label>
+                                <input type="number" id="inp-w" step="0.1" min="0.1" max="200" class="input-minimal w-full" placeholder="0.0">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium">Height (ft)</label>
+                                <input type="number" id="inp-h" step="0.1" min="0.1" max="200" class="input-minimal w-full" placeholder="0.0">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium">Quantity</label>
+                                <input type="number" id="inp-qty" step="1" class="input-minimal w-full" value="1" min="1" max="500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center text-sm">
+                        <span class="text-gray-400">Unit Price (per sqft):</span>
+                        <span class="font-bold text-gray-700" id="disp-unit-price">--</span>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-sm">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-gray-400">Estimated Lead Time:</span>
+                            <span id="lead-time-badge" class="text-[11px] font-semibold px-2 py-1 rounded-full bg-black text-white">Standard</span>
+                        </div>
+                        <div id="lead-time-text" class="text-xs text-gray-600 mt-2">Select a category to view estimated production lead time.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 border border-black/10 rounded-xl p-4 md:p-6 bg-white relative z-10">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div class="text-xs font-bold uppercase tracking-widest opacity-50">Quotation Items</div>
+                    <div id="quote-item-count" class="text-xs text-gray-500">0 item</div>
+                </div>
+                <div id="quote-items-empty" class="text-sm text-gray-500">No items yet. Build one item above, then click <strong>Add This Item</strong>.</div>
+                <div id="quote-items-list" class="space-y-2 max-h-[320px] overflow-y-auto pr-1"></div>
+                <div id="quote-items-note" class="text-xs text-gray-500 mt-3">Limits: up to 20 items per quotation, up to 500 quantity per item.</div>
+                <div id="quote-items-error" class="text-xs text-red-600 mt-2 hidden"></div>
+            </div>
+
+            <div class="mt-12 pt-12 border-t border-black/10 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+                <div class="text-center md:text-left">
+                    <div class="text-xs uppercase tracking-widest opacity-50">Quotation Total</div>
+                    <div class="text-5xl font-light mt-2" id="disp-total">₱0.00</div>
+                    <p class="text-xs text-gray-600 mt-2 max-w-xs leading-relaxed">
+                        Multi-item estimate only. Valid for 7 days. Final price subject to site measurement.
+                    </p>
+                </div>
+                
+                <button type="button" id="btn-book-step1" class="btn-pill bg-black text-white hover:bg-gray-800 mag-btn opacity-50 cursor-not-allowed" disabled>
+                    Continue to Booking
+                </button>
+            </div>
+        </form>
+    </section>
+
+    
+    <section class="faq-manifesto">
+        <div class="faq-manifesto-inner">
+            <h2 class="faq-headline">Frequently Asked Questions</h2>
+
+            <div class="faq-row">
+                <div class="faq-item active">
+                    <div class="faq-item-title">
+                        <h3>Is the instant quotation final?</h3>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            The instant quotation is an estimate based on the product, size, and quantity you entered. Final pricing is confirmed after site measurement and technical checking.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-row">
+                <div class="faq-item">
+                    <div class="faq-item-title">
+                        <h3>What services are included?</h3>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Most projects include fabrication, supply, and installation of glass and aluminum works. The exact scope is shown in your quotation and confirmed during booking.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-row">
+                <div class="faq-item">
+                    <div class="faq-item-title">
+                        <h3>How long does production and installation usually take?</h3>
+                        <div class="faq-icon">+</div>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Lead time depends on your selected system, glass type, and site readiness. After confirmation, we provide a target schedule for production and installation.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    
+    <div id="site-footer"></div>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+    <script>
+        (() => {
+            const navEntry = performance.getEntriesByType('navigation')[0];
+            const isReload = navEntry && navEntry.type === 'reload';
+            if (!isReload) return;
+
+            if (window.location.hash) {
+                history.replaceState(null, "", window.location.pathname + window.location.search);
+            }
+            if ("scrollRestoration" in history) {
+                history.scrollRestoration = "manual";
+            }
+            window.scrollTo(0, 0);
+        })();
+
+        const nav = document.getElementById('main-nav');
+        const mobileMenuBtn = document.getElementById('dxt-menu-btn');
+        const mobileMenuPanel = document.getElementById('dxt-mobile-panel');
+        const mobileMenuClose = document.getElementById('dxt-menu-close');
+        const PAGE_TRANSITION_MS = 480;
+
+        document.body.classList.add('page-enter');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.body.classList.remove('page-enter');
+            });
+        });
+
+        function scrollToHashTarget(rawHash, behavior = 'smooth') {
+            if (!rawHash || rawHash === '#') return false;
+            let target = null;
+            try {
+                target = document.querySelector(rawHash);
+            } catch (_) {
+                return false;
+            }
+            if (!target) return false;
+
+            const navHeight = nav ? nav.offsetHeight : 0;
+            const top = window.pageYOffset + target.getBoundingClientRect().top - navHeight - 12;
+            window.scrollTo({ top: Math.max(0, top), behavior });
+            history.replaceState(null, '', rawHash);
+            return true;
+        }
+
+        const wireNavPageTransition = () => {
+            document.querySelectorAll('.dxt-nav a[href], .dxt-mobile-panel a[href]').forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    if (event.defaultPrevented) return;
+                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                    if (link.target === '_blank' || link.hasAttribute('download')) return;
+
+                    const rawHref = link.getAttribute('href');
+                    if (!rawHref) return;
+                    if (rawHref.startsWith('#')) {
+                        event.preventDefault();
+                        const moved = scrollToHashTarget(rawHref, 'smooth');
+                        if (!moved) {
+                            window.location.hash = rawHref;
+                        }
+                        if (mobileMenuPanel && mobileMenuPanel.classList.contains('open')) {
+                            mobileMenuPanel.classList.remove('open');
+                            mobileMenuBtn && mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                            document.body.style.overflow = '';
+                        }
+                        return;
+                    }
+
+                    const targetUrl = new URL(link.href, window.location.href);
+                    if (targetUrl.origin !== window.location.origin) return;
+
+                    const samePath = targetUrl.pathname === window.location.pathname;
+                    if (samePath) return;
+
+                    event.preventDefault();
+                    document.body.classList.add('page-leave');
+                    setTimeout(() => {
+                        window.location.href = targetUrl.href;
+                    }, PAGE_TRANSITION_MS);
+                });
+            });
+        };
+        wireNavPageTransition();
+
+        if (window.location.hash) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    scrollToHashTarget(window.location.hash, 'auto');
+                }, 50);
+            }, { once: true });
+        }
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+        if (mobileMenuBtn && mobileMenuPanel) {
+            const setMenuState = (open) => {
+                mobileMenuPanel.classList.toggle('open', open);
+                mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                document.body.style.overflow = open ? 'hidden' : '';
+            };
+            mobileMenuBtn.addEventListener('click', () => {
+                const isOpen = !mobileMenuPanel.classList.contains('open');
+                setMenuState(isOpen);
+            });
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', () => {
+                    setMenuState(false);
+                });
+            }
+            mobileMenuPanel.querySelectorAll('.dxt-mobile-link').forEach((link) => {
+                link.addEventListener('click', () => {
+                    setMenuState(false);
+                });
+            });
+        }
+
+        function splitTextIntoWords(selector) {
+            document.querySelectorAll(selector).forEach(element => {
+                const nodes = Array.from(element.childNodes);
+                let newHTML = '';
+                nodes.forEach(node => {
+                    if (node.nodeType === 3) {
+                        const words = node.textContent.split(' ');
+                        words.forEach(word => {
+                            if (word.trim() !== '') newHTML += `<span class="word-wrap"><span class="word-inner">${word}</span></span> `;
+                            else newHTML += ' ';
+                        });
+                    } else {
+                        if(node.tagName === 'BR') newHTML += '<br>';
+                        else newHTML += node.outerHTML; 
+                    }
+                });
+                element.innerHTML = newHTML;
+            });
+        }
+
+        function setupFaq() {
+            const faqs = document.querySelectorAll('.faq-item');
+            faqs.forEach(faq => {
+                faq.addEventListener('click', () => {
+                    faqs.forEach(item => { if(item !== faq) item.classList.remove('active'); });
+                    faq.classList.toggle('active');
+                });
+            });
+        }
+
+        function setupJourneyAnimations() {
+            gsap.from("#journey .capsule-topbar", {
+                y: 14,
+                duration: 0.65,
+                ease: "power2.out",
+                immediateRender: false,
+                clearProps: "transform",
+                scrollTrigger: { trigger: "#journey", start: "top 80%", once: true }
+            });
+            gsap.from("#journey .capsule-heading", {
+                y: 42,
+                opacity: 0,
+                duration: 0.9,
+                ease: "power3.out",
+                immediateRender: false,
+                scrollTrigger: { trigger: "#journey .capsule-heading", start: "top 80%", once: true }
+            });
+            gsap.from(["#journey .capsule-left", "#journey .capsule-right"], {
+                y: 26,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.14,
+                ease: "power2.out",
+                immediateRender: false,
+                scrollTrigger: { trigger: "#journey .capsule-grid", start: "top 82%", once: true }
+            });
+            gsap.from("#journey .capsule-chip", {
+                y: 20,
+                opacity: 0,
+                scale: 0.96,
+                duration: 0.55,
+                stagger: 0.06,
+                ease: "power2.out",
+                immediateRender: false,
+                scrollTrigger: { trigger: "#journey .capsule-chips", start: "top 84%", once: true }
+            });
+        }
+
+        function setupFaqAnimations() {
+            gsap.from(".faq-manifesto .faq-headline", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                scrollTrigger: { trigger: ".faq-manifesto", start: "top 82%" }
+            });
+            gsap.from(".faq-manifesto .faq-row", {
+                y: 28,
+                opacity: 0,
+                duration: 0.7,
+                stagger: 0.12,
+                ease: "power2.out",
+                scrollTrigger: { trigger: ".faq-manifesto .faq-row:first-child", start: "top 86%" }
+            });
+        }
+
+        function setupFooterAnimations() {
+            if (!window.gsap || !window.ScrollTrigger) return;
+            const footer = document.querySelector('#site-footer footer');
+            if (!footer || footer.dataset.animated === '1') return;
+            footer.dataset.animated = '1';
+
+            gsap.from(footer.querySelector(".footer-heading"), {
+                y: 32,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                scrollTrigger: { trigger: footer, start: "top 85%" }
+            });
+
+            const revealTargets = footer.querySelectorAll("form, .footer-brand, .footer-sub, .footer-legal, .grid.grid-cols-1.lg\\:grid-cols-2");
+            gsap.from(revealTargets, {
+                y: 22,
+                opacity: 0,
+                duration: 0.75,
+                stagger: 0.1,
+                ease: "power2.out",
+                scrollTrigger: { trigger: footer, start: "top 82%" }
+            });
+        }
+
+        window.addEventListener("load", () => {
+            gsap.registerPlugin(ScrollTrigger);
+            setupFaq();
+            setupJourneyAnimations();
+            setupFaqAnimations();
+
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+            window.__jthLenis = lenis;
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            splitTextIntoWords(".text-split-anim");
+            splitTextIntoWords(".text-split-scroll");
+
+            const tl = gsap.timeline();
+            tl.from(".text-split-anim .word-inner", { yPercent: 100, opacity: 0, duration: 1, stagger: 0.04, ease: "power4.out" }, 0.5);
+            tl.from(".reveal-item", { y: 20, opacity: 0, duration: 1, stagger: 0.1, ease: "power2.out" }, 0.8);
+            tl.from(".text-fade-anim", { y: 20, opacity: 0, duration: 1, ease: "power2.out" }, 1.0);
+            tl.from(".img-parallax", { scale: 1.4, duration: 2, ease: "power2.out" }, 0);
+
+            document.querySelectorAll(".text-split-scroll").forEach(el => {
+                gsap.from(el.querySelectorAll(".word-inner"), {
+                    yPercent: 100, duration: 0.8, stagger: 0.02, ease: "power3.out",
+                    scrollTrigger: { trigger: el, start: "top 85%" }
+                });
+            });
+
+            document.querySelectorAll(".text-fade-scroll").forEach(el => {
+                gsap.from(el, { y: 30, opacity: 0, duration: 1, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 85%" } });
+            });
+
+            document.querySelectorAll(".img-parallax-wrap").forEach(wrap => {
+                gsap.fromTo(wrap.querySelector(".img-parallax"), 
+                    { yPercent: -15, scale: 1.2 }, 
+                    { 
+                        yPercent: 15, 
+                        scale: 1, 
+                        ease: "none", 
+                        force3D: true, // Crucial for lag reduction
+                        scrollTrigger: { trigger: wrap, start: "top bottom", end: "bottom top", scrub: 0.5 } // Added minimal scrub lag
+                    }
+                );
+            });
+
+            const cardTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "#process",
+                    start: "top 65%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            cardTl.from(".card-anim", {
+                y: 100,             // Comes from deeper down
+                opacity: 0,         // Fades in
+                rotationX: 15,      // Slight 3D tilt entering
+                transformOrigin: "center top",
+                duration: 1.2,
+                stagger: 0.2,       // Delays between cards
+                ease: "expo.out",   // Premium 'Apple-like' ease
+                clearProps: "transform" // Ensures CSS hover effects work perfectly after animation
+            });
+
+            gsap.from(".estimator-box", { y: 50, opacity: 0, scale: 0.95, duration: 1, ease: "power3.out", scrollTrigger: { trigger: "#estimator", start: "top 70%" } });
+
+            const cards = gsap.utils.toArray(".stack-card");
+            cards.forEach((card, index) => {
+                gsap.from(card, {
+                    y: 90 + (index * 20),
+                    x: index * 14,
+                    rotate: (index % 2 === 0 ? -2.2 : 2.2),
+                    opacity: 0,
+                    scale: 0.96,
+                    duration: 1.05,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 88%",
+                        toggleActions: "play none none reverse"
+                    }
+                });
+
+                gsap.to(card, {
+                    y: index % 2 === 0 ? -10 : 10,
+                    duration: 2.8 + (index * 0.4),
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+            });
+
+            document.querySelectorAll('.mag-btn').forEach(btn => {
+                btn.addEventListener("mousemove", (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    gsap.to(btn, { x: (e.clientX - rect.left - rect.width / 2) * 0.4, y: (e.clientY - rect.top - rect.height / 2) * 0.4, duration: 0.3 });
+                });
+                btn.addEventListener("mouseleave", () => { gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1,0.5)" }); });
+            });
+
+            setupFooterAnimations();
+        });
+        document.addEventListener('jth:footer-ready', () => {
+            if (window.gsap && window.ScrollTrigger) {
+                setupFooterAnimations();
+                ScrollTrigger.refresh();
+            }
+        });
+    </script>
+
+    
+   <script type="module">
+        import { db, collection, getDocs } from "./js/firebase-config.js";
+
+        let PRODUCT_DB = {};
+
+        function makeKey(text) {
+            return String(text || "")
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, "_")
+                .replace(/^_+|_+$/g, "");
+        }
+
+        function makeVariantLabel(glass, finish) {
+            const g = String(glass || "").trim();
+            const f = String(finish || "").trim();
+            if (g && f) return `${g} - ${f}`;
+            if (g) return g;
+            if (f) return f;
+            return "Standard";
+        }
+
+        function normalizePrice(value) {
+            const n = parseFloat(value);
+            return Number.isFinite(n) ? n : 0;
+        }
+
+        const PRODUCTS_CACHE_KEY = "jth_products_cache_v1";
+        let listenersBound = false;
+        let productsWs = null;
+        let productsWsReconnectTimer = null;
+        const PRODUCTS_WS_URL = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname}:8081`;
+
+        async function fetchProductsWsToken() {
+            const res = await fetch('backend/ws_token.php?action=products_public', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const json = await res.json();
+            if (!res.ok || json.status !== 'success' || !json.token) {
+                throw new Error(json.message || 'Failed to create realtime token.');
+            }
+            return json.token;
+        }
+
+        function readProductsCache() {
+            try {
+                const raw = localStorage.getItem(PRODUCTS_CACHE_KEY);
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                return parsed && typeof parsed === "object" ? parsed : null;
+            } catch {
+                return null;
+            }
+        }
+
+        function writeProductsCache(data) {
+            try {
+                localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(data));
+            } catch {
+            }
+        }
+
+        function populateCategoryOptions(productDb) {
+            const selCat = document.getElementById('sel-category');
+            selCat.innerHTML = '<option value="">Select Category...</option>';
+
+            const categoryKeys = Object.keys(productDb || {});
+            if (categoryKeys.length === 0) return false;
+
+            categoryKeys.forEach((key) => {
+                const item = productDb[key];
+                if (!item || !item.display_name) return;
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = item.display_name;
+                selCat.appendChild(opt);
+            });
+            return true;
+        }
+
+        function hideProductOverlay() {
+            document.getElementById('loading-overlay').classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        async function fetchJsonWithTimeout(url, timeoutMs = 6000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function loadProductsFromFirestore() {
+            const snap = await getDocs(collection(db, "prices"));
+            const mapped = {};
+
+            snap.forEach((docSnap) => {
+                const row = docSnap.data();
+                const productName = String(row.product || "").trim();
+                if (!productName) return;
+
+                const categoryKey = makeKey(productName) || "product";
+                if (!mapped[categoryKey]) {
+                    mapped[categoryKey] = {
+                        display_name: productName,
+                        variants: {}
+                    };
+                }
+
+                const variantLabel = makeVariantLabel(row.glass, row.finish);
+                const baseVariantKey = makeKey(variantLabel) || "variant";
+                let variantKey = baseVariantKey;
+                let i = 1;
+                while (mapped[categoryKey].variants[variantKey]) {
+                    i += 1;
+                    variantKey = `${baseVariantKey}_${i}`;
+                }
+
+                mapped[categoryKey].variants[variantKey] = {
+                    label: variantLabel,
+                    price_no_screen: normalizePrice(row.price),
+                    price_w_screen: normalizePrice(row.price_w_screen),
+                    is_available: row.is_available !== false
+                };
+            });
+
+            return mapped;
+        }
+
+        async function loadProducts() {
+            try {
+                const json = await fetchJsonWithTimeout('backend/get_options.php', 5000);
+                if (json && typeof json === 'object' && !json.error) {
+                    return json;
+                }
+            } catch (e) {
+            }
+            const firestoreData = await Promise.race([
+                loadProductsFromFirestore(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 6000))
+            ]);
+            return firestoreData;
+        }
+
+        async function refreshEstimatorProductsRealtime() {
+            const selCat = document.getElementById('sel-category');
+            const selVar = document.getElementById('sel-variant');
+            const inpW = document.getElementById('inp-w');
+            const inpH = document.getElementById('inp-h');
+            const inpQty = document.getElementById('inp-qty');
+            const chkScreen = document.getElementById('chk-screen');
+            if (!selCat || !selVar) return;
+
+            const snapshot = {
+                cat: selCat.value,
+                variant: selVar.value,
+                w: inpW ? inpW.value : '',
+                h: inpH ? inpH.value : '',
+                qty: inpQty ? inpQty.value : '1',
+                screen: chkScreen ? chkScreen.checked : false
+            };
+
+            try {
+                PRODUCT_DB = await loadProducts();
+                writeProductsCache(PRODUCT_DB);
+                populateCategoryOptions(PRODUCT_DB);
+
+                if (snapshot.cat && PRODUCT_DB[snapshot.cat]) {
+                    selCat.value = snapshot.cat;
+                    selCat.dispatchEvent(new Event('change'));
+                    const hasVariant = Array.from(selVar.options).some((opt) => opt.value === snapshot.variant && !opt.disabled);
+                    if (hasVariant) {
+                        selVar.value = snapshot.variant;
+                        selVar.dispatchEvent(new Event('change'));
+                    }
+                } else {
+                    selCat.value = '';
+                    selCat.dispatchEvent(new Event('change'));
+                }
+
+                if (inpW) {
+                    inpW.value = snapshot.w;
+                    inpW.dispatchEvent(new Event('input'));
+                }
+                if (inpH) {
+                    inpH.value = snapshot.h;
+                    inpH.dispatchEvent(new Event('input'));
+                }
+                if (inpQty) {
+                    inpQty.value = snapshot.qty;
+                    inpQty.dispatchEvent(new Event('input'));
+                }
+                if (chkScreen) {
+                    chkScreen.checked = snapshot.screen;
+                    chkScreen.dispatchEvent(new Event('change'));
+                }
+            } catch (err) {
+                console.warn('Realtime product refresh failed:', err);
+            }
+        }
+
+        function scheduleProductsWsReconnect() {
+            if (productsWsReconnectTimer) return;
+            productsWsReconnectTimer = setTimeout(() => {
+                productsWsReconnectTimer = null;
+                startProductsRealtimeSync();
+            }, 3000);
+        }
+
+        async function startProductsRealtimeSync() {
+            if (productsWs && (productsWs.readyState === WebSocket.OPEN || productsWs.readyState === WebSocket.CONNECTING)) {
+                return;
+            }
+
+            let token = '';
+            try {
+                token = await fetchProductsWsToken();
+                productsWs = new WebSocket(`${PRODUCTS_WS_URL}?token=${encodeURIComponent(token)}`);
+            } catch (_) {
+                scheduleProductsWsReconnect();
+                return;
+            }
+
+            productsWs.addEventListener('message', async (event) => {
+                try {
+                    const payload = JSON.parse(event.data);
+                    if (!payload || payload.type !== 'product_price_updated') return;
+                    localStorage.removeItem(PRODUCTS_CACHE_KEY);
+                    await refreshEstimatorProductsRealtime();
+                } catch (_) {
+                }
+            });
+
+            productsWs.addEventListener('close', () => {
+                scheduleProductsWsReconnect();
+            });
+            productsWs.addEventListener('error', () => {
+                scheduleProductsWsReconnect();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const cached = readProductsCache();
+                if (cached && Object.keys(cached).length > 0) {
+                    PRODUCT_DB = cached;
+                    if (populateCategoryOptions(PRODUCT_DB)) {
+                        if (!listenersBound) {
+                            attachListeners();
+                            listenersBound = true;
+                        }
+                        hideProductOverlay();
+                    }
+                }
+
+                PRODUCT_DB = await loadProducts();
+                writeProductsCache(PRODUCT_DB);
+
+                if (!populateCategoryOptions(PRODUCT_DB)) {
+                    document.querySelector('#loading-overlay span').textContent = "No products configured.";
+                    return;
+                }
+
+                if (!listenersBound) {
+                    attachListeners();
+                    listenersBound = true;
+                }
+                hideProductOverlay();
+                startProductsRealtimeSync();
+            } catch (err) {
+                console.error("Failed to load products", err);
+                if (!PRODUCT_DB || Object.keys(PRODUCT_DB).length === 0) {
+                    document.querySelector('#loading-overlay span').textContent = "Product sync failed. Please refresh.";
+                } else {
+                    hideProductOverlay();
+                    startProductsRealtimeSync();
+                }
+            }
+        });
+
+        function attachListeners() {
+            const dom = {
+                cat: document.getElementById('sel-category'),
+                var: document.getElementById('sel-variant'),
+                scr: document.getElementById('chk-screen'),
+                lbl: document.getElementById('lbl-screen'),
+                w: document.getElementById('inp-w'),
+                h: document.getElementById('inp-h'),
+                qty: document.getElementById('inp-qty'),
+                uP: document.getElementById('disp-unit-price'),
+                leadTimeText: document.getElementById('lead-time-text'),
+                leadTimeBadge: document.getElementById('lead-time-badge'),
+                tP: document.getElementById('disp-total'),
+                btn: document.getElementById('btn-book-step1'),
+                add: document.getElementById('btn-add-item'),
+                list: document.getElementById('quote-items-list'),
+                empty: document.getElementById('quote-items-empty'),
+                count: document.getElementById('quote-item-count'),
+                err: document.getElementById('quote-items-error')
+            };
+            const quoteItems = [];
+            const QUOTE_ITEMS_KEY = 'jth_quote_items_v1';
+            const MAX_LINE_ITEMS = 20;
+            const MAX_QTY_PER_ITEM = 500;
+            const MAX_TOTAL_QTY = 3000;
+            const peso = new Intl.NumberFormat('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const leadTimeRules = [
+                { test: /sliding|window|door/i, badge: 'Fast', text: 'Estimated lead time: 7-12 working days after site validation and confirmation.' },
+                { test: /casement|awning|french/i, badge: 'Standard', text: 'Estimated lead time: 10-18 working days depending on hardware and finish availability.' },
+                { test: /38|50|798|900|series/i, badge: 'Standard', text: 'Estimated lead time: 10-20 working days for most standard series configurations.' },
+                { test: /patch|tempered|partition|railing|shower/i, badge: 'Custom', text: 'Estimated lead time: 12-25 working days due to custom sizing and glass preparation.' }
+            ];
+
+            const minNote = document.createElement('div');
+            minNote.className = "text-[10px] text-gray-400 mt-1";
+            minNote.textContent = "Minimum order applied.";
+            minNote.style.display = "none";
+            dom.tP.insertAdjacentElement('afterend', minNote);
+
+            const toPeso = (value) => `₱${peso.format(Number.isFinite(value) ? value : 0)}`;
+            const isValidNumber = (n) => typeof n === 'number' && Number.isFinite(n) && n > 0;
+            const normalizeQtyValue = (raw) => {
+                const parsed = parseInt(String(raw ?? '').replace(/\D+/g, ''), 10);
+                if (!Number.isInteger(parsed) || parsed < 1) return 1;
+                return Math.min(MAX_QTY_PER_ITEM, parsed);
+            };
+            const recalcItemSubtotal = (item) => {
+                if (!item || typeof item !== 'object') return 0;
+                const qty = normalizeQtyValue(item.qty);
+                const width = parseFloat(item.width) || 0;
+                const height = parseFloat(item.height) || 0;
+                const unit = parseFloat(item.unit_price) || 0;
+                const subtotal = (width > 0 && height > 0 && unit > 0) ? (width * height * unit * qty) : 0;
+                item.qty = qty;
+                item.subtotal = subtotal;
+                return subtotal;
+            };
+            const renderLeadTime = () => {
+                if (!dom.leadTimeText || !dom.leadTimeBadge) return;
+                const categoryKey = dom.cat.value || '';
+                const categoryData = PRODUCT_DB[categoryKey] || null;
+                const label = (categoryData && categoryData.display_name ? categoryData.display_name : categoryKey).trim();
+                if (!label) {
+                    dom.leadTimeBadge.textContent = 'Standard';
+                    dom.leadTimeText.textContent = 'Select a category to view estimated production lead time.';
+                    return;
+                }
+                const match = leadTimeRules.find((rule) => rule.test.test(label)) || null;
+                if (match) {
+                    dom.leadTimeBadge.textContent = match.badge;
+                    dom.leadTimeText.textContent = match.text;
+                } else {
+                    dom.leadTimeBadge.textContent = 'Standard';
+                    dom.leadTimeText.textContent = 'Estimated lead time: 10-20 working days for this product type after schedule confirmation.';
+                }
+            };
+            const setInlineError = (message = '') => {
+                if (!dom.err) return;
+                if (message) {
+                    dom.err.textContent = message;
+                    dom.err.classList.remove('hidden');
+                } else {
+                    dom.err.textContent = '';
+                    dom.err.classList.add('hidden');
+                }
+            };
+
+            function computeCurrentItem() {
+                const opt = dom.var.selectedOptions[0];
+                const hasVariant = !!(opt && opt.value);
+                let price = NaN;
+                let base = NaN;
+                let withS = NaN;
+
+                if (hasVariant) {
+                    base = parseFloat(opt.dataset.p_base);
+                    withS = parseFloat(opt.dataset.p_screen);
+                    if (dom.scr.checked && isValidNumber(withS)) {
+                        price = withS;
+                    } else if (isValidNumber(base)) {
+                        price = base;
+                    }
+                } else {
+                    price = NaN;
+                }
+
+                const wVal = parseFloat(dom.w.value);
+                const hVal = parseFloat(dom.h.value);
+                const qVal = parseInt(dom.qty.value, 10);
+                const validW = isValidNumber(wVal);
+                const validH = isValidNumber(hVal);
+                const validQ = Number.isInteger(qVal) && qVal > 0;
+                const area = validW && validH ? (wVal * hVal) : 0;
+                const rawTotal = (isValidNumber(price) && area > 0 && validQ) ? (area * price * qVal) : 0;
+
+                const categoryKey = dom.cat.value;
+                const variantKey = dom.var.value;
+                const categoryData = PRODUCT_DB[categoryKey] || {};
+                const productLabel = categoryData.display_name || categoryKey;
+                const variantLabel = (opt && opt.value) ? opt.textContent.replace(/\s+\(Temporarily Unavailable\)\s*$/, '') : '';
+                const withScreen = dom.scr.checked === true;
+                const itemLabel = `${productLabel} (${variantLabel})${withScreen ? " [w/ Screen]" : ""}`;
+
+                const valid = (
+                    categoryKey !== "" &&
+                    variantKey !== "" &&
+                    validW &&
+                    validH &&
+                    validQ &&
+                    qVal <= MAX_QTY_PER_ITEM &&
+                    isValidNumber(price) &&
+                    rawTotal > 0
+                );
+
+                return {
+                    valid,
+                    rawTotal,
+                    unitPrice: isValidNumber(price) ? price : 0,
+                    item: valid ? {
+                        product_key: categoryKey,
+                        variant_key: variantKey,
+                        w_screen: withScreen,
+                        width: wVal,
+                        height: hVal,
+                        qty: qVal,
+                        unit_price: price,
+                        subtotal: rawTotal,
+                        label: itemLabel
+                    } : null
+                };
+            }
+
+            function computeGrandTotal(previewRaw = 0) {
+                const baseTotal = quoteItems.reduce((sum, item) => sum + recalcItemSubtotal(item), 0);
+                if (quoteItems.length === 0 && previewRaw > 0) {
+                    return previewRaw;
+                }
+                return baseTotal;
+            }
+
+            function renderQuoteItems(previewRaw = 0, canContinueWithCurrent = false) {
+                dom.list.innerHTML = '';
+                if (quoteItems.length === 0) {
+                    dom.empty.style.display = 'block';
+                    dom.count.textContent = '0 item';
+                } else {
+                    dom.empty.style.display = 'none';
+                    dom.count.textContent = `${quoteItems.length} item${quoteItems.length > 1 ? 's' : ''}`;
+                    quoteItems.forEach((item, index) => {
+                        const safeQty = normalizeQtyValue(item.qty);
+                        recalcItemSubtotal(item);
+                        const row = document.createElement('div');
+                        row.className = 'flex items-start justify-between gap-3 border border-black/10 rounded-lg px-3 py-2';
+                        row.innerHTML = `
+                            <div class="min-w-0">
+                                <div class="text-sm font-medium leading-snug break-words">${item.label}</div>
+                                <div class="text-xs text-gray-500 mt-1">${item.width}ft × ${item.height}ft</div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <div class="flex items-center justify-end gap-2 mt-0.5 mb-1">
+                                    <label class="text-[10px] text-gray-500 uppercase tracking-wider">Qty</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="${MAX_QTY_PER_ITEM}"
+                                        step="1"
+                                        value="${safeQty}"
+                                        data-qty-index="${index}"
+                                        class="w-16 h-7 border border-black/20 rounded-md text-xs text-center outline-none focus:border-black transition"
+                                    >
+                                </div>
+                                <div class="text-sm font-semibold">${toPeso(item.subtotal)}</div>
+                                <button type="button" class="text-xs text-gray-500 hover:text-black mt-1" data-remove-index="${index}">Remove</button>
+                            </div>
+                        `;
+                        dom.list.appendChild(row);
+                    });
+                }
+
+                const rawGrand = computeGrandTotal(previewRaw);
+                const displayGrand = (rawGrand > 0 && rawGrand < 3000) ? 3000 : rawGrand;
+                dom.tP.textContent = toPeso(displayGrand);
+                minNote.style.display = (rawGrand > 0 && rawGrand < 3000) ? 'block' : 'none';
+
+                if (quoteItems.length > 0 || canContinueWithCurrent) {
+                    dom.btn.disabled = false;
+                    dom.btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    dom.btn.disabled = true;
+                    dom.btn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            function reCalc() {
+                const current = computeCurrentItem();
+                if (current.unitPrice > 0) {
+                    dom.uP.textContent = `${toPeso(current.unitPrice)} / sqft`;
+                } else {
+                    dom.uP.textContent = '--';
+                }
+                renderQuoteItems(current.rawTotal, current.valid);
+            }
+
+            function resetItemInputs() {
+                dom.w.value = '';
+                dom.h.value = '';
+                dom.qty.value = '1';
+                dom.scr.checked = false;
+                reCalc();
+            }
+
+            dom.list.addEventListener('click', (event) => {
+                const removeBtn = event.target.closest('[data-remove-index]');
+                if (!removeBtn) return;
+                const idx = parseInt(removeBtn.getAttribute('data-remove-index'), 10);
+                if (!Number.isInteger(idx) || idx < 0 || idx >= quoteItems.length) return;
+                quoteItems.splice(idx, 1);
+                setInlineError('');
+                reCalc();
+            });
+
+            const applyEditedItemQty = (inputEl) => {
+                if (!inputEl) return;
+                const idx = parseInt(inputEl.getAttribute('data-qty-index'), 10);
+                if (!Number.isInteger(idx) || idx < 0 || idx >= quoteItems.length) return;
+
+                const nextQty = normalizeQtyValue(inputEl.value);
+                const prevQty = normalizeQtyValue(quoteItems[idx].qty);
+                const totalOtherQty = quoteItems.reduce((sum, item, i) => {
+                    if (i === idx) return sum;
+                    return sum + normalizeQtyValue(item.qty);
+                }, 0);
+
+                if ((totalOtherQty + nextQty) > MAX_TOTAL_QTY) {
+                    setInlineError(`Total quantity limit reached. Maximum is ${MAX_TOTAL_QTY}.`);
+                    inputEl.value = String(prevQty);
+                    return;
+                }
+
+                quoteItems[idx].qty = nextQty;
+                recalcItemSubtotal(quoteItems[idx]);
+                inputEl.value = String(nextQty);
+                setInlineError('');
+                reCalc();
+            };
+
+            dom.list.addEventListener('input', (event) => {
+                const qtyInput = event.target.closest('[data-qty-index]');
+                if (!qtyInput) return;
+                const normalized = normalizeQtyValue(qtyInput.value);
+                qtyInput.value = String(normalized);
+                applyEditedItemQty(qtyInput);
+            });
+
+            dom.list.addEventListener('change', (event) => {
+                const qtyInput = event.target.closest('[data-qty-index]');
+                if (!qtyInput) return;
+                applyEditedItemQty(qtyInput);
+            });
+
+            dom.add.addEventListener('click', () => {
+                setInlineError('');
+                if (quoteItems.length >= MAX_LINE_ITEMS) {
+                    setInlineError(`Maximum of ${MAX_LINE_ITEMS} items per quotation.`);
+                    return;
+                }
+                const current = computeCurrentItem();
+                if (!current.valid || !current.item) {
+                    dom.add.classList.add('animate-pulse');
+                    setInlineError(`Please complete valid values (qty 1-${MAX_QTY_PER_ITEM}, width/height up to 200ft).`);
+                    setTimeout(() => dom.add.classList.remove('animate-pulse'), 400);
+                    return;
+                }
+                const nextTotalQty = quoteItems.reduce((sum, item) => sum + (parseInt(item.qty, 10) || 0), 0) + (parseInt(current.item.qty, 10) || 0);
+                if (nextTotalQty > MAX_TOTAL_QTY) {
+                    setInlineError(`Total quantity limit reached. Maximum is ${MAX_TOTAL_QTY}.`);
+                    return;
+                }
+                quoteItems.push(current.item);
+                resetItemInputs();
+            });
+
+            function serializeQuoteItems() {
+                return quoteItems.map((item) => ({
+                    product_key: item.product_key,
+                    variant_key: item.variant_key,
+                    w_screen: item.w_screen,
+                    width: item.width,
+                    height: item.height,
+                    qty: item.qty,
+                    unit_price: Number(item.unit_price) || 0,
+                    subtotal: Number(item.subtotal) || 0
+                }));
+            }
+
+
+            dom.cat.addEventListener('change', () => {
+                dom.var.innerHTML = '<option value="">Select Option...</option>';
+                dom.var.disabled = true;
+                dom.scr.checked = false; 
+                dom.scr.disabled = true;
+                dom.lbl.classList.add('opacity-50');
+                
+                const catKey = dom.cat.value;
+                renderLeadTime();
+                if (!catKey || !PRODUCT_DB[catKey]) { reCalc(); return; }
+
+                const variants = PRODUCT_DB[catKey].variants;
+                const variantKeys = (variants && typeof variants === 'object') ? Object.keys(variants) : [];
+                if (variantKeys.length === 0) {
+                    dom.var.innerHTML = '<option value="">No options available</option>';
+                    dom.var.disabled = true;
+                    reCalc();
+                    return;
+                }
+
+                variantKeys.forEach(vKey => {
+                    const v = variants[vKey];
+                    const opt = document.createElement('option');
+                    opt.value = vKey;
+                    opt.textContent = v.label;
+                    opt.dataset.p_base = v.price_no_screen;
+                    opt.dataset.p_screen = v.price_w_screen || 0;
+                    
+                    if(v.is_available === false) {
+                        opt.textContent += " (Temporarily Unavailable)";
+                        opt.disabled = true;
+                    }
+                    dom.var.appendChild(opt);
+                });
+                
+                dom.var.disabled = false;
+                reCalc();
+            });
+
+            dom.var.addEventListener('change', () => {
+                const opt = dom.var.selectedOptions[0];
+                if (!opt || !opt.value) { reCalc(); return; }
+
+                if (parseFloat(opt.dataset.p_screen) > 0) {
+                    dom.scr.disabled = false;
+                    dom.lbl.classList.remove('opacity-50');
+                } else {
+                    dom.scr.disabled = true;
+                    dom.scr.checked = false;
+                    dom.lbl.classList.add('opacity-50');
+                }
+                reCalc();
+            });
+
+            dom.scr.addEventListener('change', reCalc);
+
+            [dom.w, dom.h, dom.qty].forEach(el => {
+                el.addEventListener('input', reCalc);
+            });
+            dom.qty.addEventListener('input', () => {
+                let q = parseInt(dom.qty.value, 10);
+                if (!Number.isInteger(q) || q < 1) q = 1;
+                if (q > MAX_QTY_PER_ITEM) q = MAX_QTY_PER_ITEM;
+                dom.qty.value = String(q);
+            });
+
+            dom.btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                setInlineError('');
+                const current = computeCurrentItem();
+                if (quoteItems.length === 0 && current.valid && current.item) {
+                    quoteItems.push(current.item);
+                }
+                if (quoteItems.length === 0) {
+                    setInlineError('Add at least one valid item before continuing.');
+                    return;
+                }
+                const totalQty = quoteItems.reduce((sum, item) => sum + (parseInt(item.qty, 10) || 0), 0);
+                if (totalQty > MAX_TOTAL_QTY) {
+                    setInlineError(`Total quantity is too high (${totalQty}). Max allowed is ${MAX_TOTAL_QTY}.`);
+                    return;
+                }
+                const payload = {
+                    line_items: serializeQuoteItems(),
+                    estimated_total: computeGrandTotal(0)
+                };
+                sessionStorage.setItem(QUOTE_ITEMS_KEY, JSON.stringify(payload));
+                window.location.href = 'book_final.html';
+            });
+
+            reCalc();
+            renderLeadTime();
+        }
+    </script>
+    <div id="chat-widget-root"></div>
+    <script src="js/footer.js"></script>
+    <script src="js/chat-widget.js"></script>
+    <script src="js/image-protect.js"></script>
+</body>
+</html>
