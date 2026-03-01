@@ -7,8 +7,8 @@
             .chat-fab {
                 position: fixed;
                 left: auto;
-                right: 60px;
-                bottom: 164px;
+                right: 56px;
+                bottom: 188px;
                 transform: none;
                 z-index: 130;
                 width: 58px;
@@ -69,7 +69,7 @@
             .chat-panel {
                 position: fixed;
                 left: auto;
-                right: 9px;
+                right: 10px;
                 bottom: 192px;
                 transform: none;
                 z-index: 130;
@@ -195,14 +195,14 @@
             @media (max-width: 767px) {
                 .chat-fab {
                     left: auto;
-                    right: 9px;
-                    bottom: 150px;
+                    right: 10px;
+                    bottom: 176px;
                     width: 52px;
                     height: 52px;
                 }
                 .chat-panel {
                     left: auto;
-                    right: 9px;
+                    right: 10px;
                     bottom: 210px;
                     width: calc(100vw - 20px);
                     height: min(500px, calc(100vh - 190px));
