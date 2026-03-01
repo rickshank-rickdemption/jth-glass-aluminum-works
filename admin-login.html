@@ -120,14 +120,6 @@
                     <input type="password" id="password" class="shadcn-input" placeholder="Password" required>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 sr-only" for="totpCode">
-                        Authenticator Code
-                    </label>
-                    <input type="text" id="totpCode" inputmode="numeric" maxlength="6" class="shadcn-input" placeholder="Authenticator code (6 digits)">
-                    <p class="text-[11px] text-zinc-500">TOTP is required after recovery setup is enabled.</p>
-                </div>
-
                 <!-- Error Message (Hidden by default) -->
                 <p id="error" class="text-[0.8rem] font-medium text-red-500 text-center hidden">
                     Invalid credentials. Please try again.
@@ -166,7 +158,6 @@
             const container = document.getElementById('login-container');
             const idInput = document.getElementById('adminId');
             const passInput = document.getElementById('password');
-            const totpInput = document.getElementById('totpCode');
             const err = document.getElementById('error');
             const btn = e.target.querySelector('button');
             const originalText = btn.innerText;
@@ -186,7 +177,6 @@
                     body: JSON.stringify({
                         username: idInput.value,
                         password: passInput.value,
-                        totp_code: String(totpInput?.value || '').replace(/\D+/g, ''),
                         recaptcha_token: recaptchaToken
                     })
                 });
@@ -197,10 +187,6 @@
                     window.location.href = 'admin-dashboard.php';
                 } else if (result.status === 'reset_required') {
                     window.location.href = 'admin-password-reset.html';
-                } else if (result.status === 'recovery_setup_required') {
-                    window.location.href = 'admin-recovery-setup.html';
-                } else if (result.reason === 'TOTP_REQUIRED') {
-                    throw new Error('Invalid or missing authenticator code.');
                 } else {
                     throw new Error(result.message || 'Invalid Login');
                 }
@@ -214,7 +200,6 @@
                 btn.disabled = false;
                 
                 passInput.value = ''; 
-                if (totpInput) totpInput.value = '';
                 passInput.focus();
             }
         });

@@ -830,7 +830,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($okUser && $okPass) {
         $recoveryConfigured = !empty($authStore['recovery_enabled']) && !empty($authStore['totp_secret']) && !empty($authStore['recovery_code_hash']);
-        if ($recoveryConfigured && !verifyTotpCode((string)$authStore['totp_secret'], $totpCode, 1)) {
+        if (ADMIN_REQUIRE_TOTP_LOGIN && $recoveryConfigured && !verifyTotpCode((string)$authStore['totp_secret'], $totpCode, 1)) {
             $fails = (int)($rateEntry['attempts'] ?? 0) + 1;
             $tier = max(1, (int)($rateEntry['lock_tier'] ?? 1));
             $newLockUntil = 0;
@@ -874,8 +874,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($_SESSION['jth_admin_force_password_reset'])) {
             appLog('info', 'admin_login_success_reset_required', ['username' => $user, 'ip' => $clientIp]);
             echo json_encode(['status' => 'reset_required']);
-        } elseif (!isRecoveryConfigured()) {
-            echo json_encode(['status' => 'recovery_setup_required']);
         } else {
             appLog('info', 'admin_login_success', ['username' => $user, 'ip' => $clientIp]);
             echo json_encode(['status' => 'success']);
