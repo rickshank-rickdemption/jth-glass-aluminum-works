@@ -540,7 +540,7 @@ $terminalStatuses = jthTerminalStatuses();
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-border space-y-3">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="relative flex-1 min-w-0 sm:max-w-[320px]">
+                        <div class="relative flex-1 min-w-0 sm:max-w-[380px]">
                             <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
@@ -552,7 +552,7 @@ $terminalStatuses = jthTerminalStatuses();
                                 class="pl-8 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-200 rounded-lg w-full focus:outline-none focus:border-primary transition"
                             >
                         </div>
-                        <div class="flex items-center justify-start sm:justify-end gap-2 shrink-0 w-full sm:w-auto">
+                        <div class="flex items-center justify-end gap-2 shrink-0">
                             <span id="customer-count" class="text-[10px] text-zinc-600 whitespace-nowrap px-2.5 py-1 rounded-md border border-zinc-200 bg-white">0 customers</span>
                         </div>
                     </div>
