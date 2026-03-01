@@ -4,6 +4,7 @@ header("Content-Type: application/json");
 require_once 'config.php';
 require_once 'session.php';
 require_once 'logger.php';
+require_once 'mailer.php';
 startSecureSession();
 applySecurityHeaders(true);
 enforceHttpsForAdmin(true);
@@ -385,6 +386,41 @@ function readRecoveryRateEntry($rateKey)
     return [$store, $limits, $entry];
 }
 
+function adminRecoveryOtpRecipient()
+{
+    $candidates = [
+        (string)INQUIRY_RECEIVER_EMAIL,
+        (string)SMTP_USER,
+        (string)SMTP_FROM_EMAIL
+    ];
+    foreach ($candidates as $email) {
+        $email = trim($email);
+        if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $email;
+        }
+    }
+    return '';
+}
+
+function buildAdminRecoveryOtpHtml($code, $username, $ip)
+{
+    $safeCode = htmlspecialchars((string)$code, ENT_QUOTES, 'UTF-8');
+    $safeUser = htmlspecialchars((string)$username, ENT_QUOTES, 'UTF-8');
+    $safeIp = htmlspecialchars((string)$ip, ENT_QUOTES, 'UTF-8');
+    $expiresAt = date('Y-m-d h:i A', time() + 600);
+    return "
+        <div style='font-family:Inter,Arial,sans-serif;color:#111'>
+            <h2 style='margin:0 0 10px 0;'>Admin Password Reset OTP</h2>
+            <p style='margin:0 0 8px 0;'>A password reset was requested for admin account <strong>{$safeUser}</strong>.</p>
+            <p style='margin:0 0 8px 0;'>Use this OTP code:</p>
+            <div style='font-size:28px;font-weight:700;letter-spacing:4px;margin:10px 0 14px 0;'>{$safeCode}</div>
+            <p style='margin:0 0 8px 0;'>Expires at: {$expiresAt}</p>
+            <p style='margin:0 0 8px 0;'>Request IP: {$safeIp}</p>
+            <p style='margin:10px 0 0 0;color:#666;font-size:12px;'>If this was not you, ignore this email and change your admin password immediately.</p>
+        </div>
+    ";
+}
+
 if ($action === 'logout') {
     clearSessionData();
     echo json_encode(['status' => 'success']);
@@ -540,6 +576,155 @@ if ($action === 'recovery_setup_confirm' && $_SERVER['REQUEST_METHOD'] === 'POST
         'status' => 'success',
         'recovery_code' => $recoveryCode
     ]);
+    exit;
+}
+
+if ($action === 'forgot_password_send_otp' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input)) $input = [];
+
+    $username = trim((string)($input['username'] ?? ''));
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $rateKey = buildRecoveryRateKey($clientIp . '|forgot_otp_send');
+    [$store, $limits, $entry] = readRecoveryRateEntry($rateKey);
+    $nowTs = time();
+    $lockUntil = (int)($entry['lock_until'] ?? 0);
+    if ($lockUntil > $nowTs) {
+        $wait = max(1, $lockUntil - $nowTs);
+        echo json_encode(['status' => 'error', 'message' => "Too many requests. Try again in {$wait}s."]);
+        exit;
+    }
+
+    if ($username === '' || !hash_equals((string)ADMIN_USER, $username)) {
+        echo json_encode(['status' => 'success', 'message' => 'If the account exists, an OTP has been sent.']);
+        exit;
+    }
+
+    $recipient = adminRecoveryOtpRecipient();
+    if ($recipient === '') {
+        echo json_encode(['status' => 'error', 'message' => 'Admin recovery email is not configured.']);
+        exit;
+    }
+
+    $existingOtp = isset($store['forgot_password_otp']) && is_array($store['forgot_password_otp']) ? $store['forgot_password_otp'] : [];
+    $lastSentAt = (int)($existingOtp['last_sent_at'] ?? 0);
+    if ($lastSentAt > 0 && ($nowTs - $lastSentAt) < 60) {
+        $wait = 60 - ($nowTs - $lastSentAt);
+        echo json_encode(['status' => 'error', 'message' => "Please wait {$wait}s before requesting another OTP."]);
+        exit;
+    }
+
+    $otpCode = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    $otpHash = password_hash($otpCode, PASSWORD_DEFAULT);
+    $subject = 'Admin Password Reset OTP';
+    $body = buildAdminRecoveryOtpHtml($otpCode, $username, $clientIp);
+
+    if (!sendEmail($recipient, $subject, $body)) {
+        $fails = (int)(($limits[$rateKey]['attempts'] ?? 0)) + 1;
+        $newLockUntil = 0;
+        if ($fails >= LOGIN_MAX_ATTEMPTS) {
+            $newLockUntil = $nowTs + LOGIN_LOCKOUT_SECONDS;
+            $fails = 0;
+        }
+        $limits[$rateKey] = [
+            'attempts' => $fails,
+            'lock_until' => $newLockUntil,
+            'updated_at' => $nowTs
+        ];
+        $store['recovery_rate_limits'] = $limits;
+        saveAdminAuthStore($store);
+        echo json_encode(['status' => 'error', 'message' => 'Unable to send OTP right now. Please try again.']);
+        exit;
+    }
+
+    unset($limits[$rateKey]);
+    $store['recovery_rate_limits'] = $limits;
+    $store['forgot_password_otp'] = [
+        'username' => $username,
+        'otp_hash' => $otpHash,
+        'expires_at' => $nowTs + 600,
+        'attempts' => 0,
+        'created_at' => $nowTs,
+        'last_sent_at' => $nowTs,
+        'ip' => $clientIp
+    ];
+    $store['updated_at'] = $nowTs;
+    saveAdminAuthStore($store);
+
+    echo json_encode(['status' => 'success', 'message' => 'OTP sent to admin recovery email.']);
+    exit;
+}
+
+if ($action === 'forgot_password_verify_reset' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($input)) $input = [];
+
+    $username = trim((string)($input['username'] ?? ''));
+    $otpCode = preg_replace('/\D+/', '', (string)($input['otp_code'] ?? ''));
+    $newPass = (string)($input['new_password'] ?? '');
+    $confirmPass = (string)($input['confirm_password'] ?? '');
+
+    if ($username === '' || !hash_equals((string)ADMIN_USER, $username)) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid account.']);
+        exit;
+    }
+    if (!preg_match('/^\d{6}$/', $otpCode)) {
+        echo json_encode(['status' => 'error', 'message' => 'OTP must be 6 digits.']);
+        exit;
+    }
+    if ($newPass === '' || strlen($newPass) < 12) {
+        echo json_encode(['status' => 'error', 'message' => 'New password must be at least 12 characters.']);
+        exit;
+    }
+    if ($newPass !== $confirmPass) {
+        echo json_encode(['status' => 'error', 'message' => 'Password confirmation does not match.']);
+        exit;
+    }
+
+    $store = loadAdminAuthStore();
+    $otpState = isset($store['forgot_password_otp']) && is_array($store['forgot_password_otp']) ? $store['forgot_password_otp'] : null;
+    if (!is_array($otpState) || empty($otpState['otp_hash']) || empty($otpState['expires_at'])) {
+        echo json_encode(['status' => 'error', 'message' => 'No active OTP. Please request a new code.']);
+        exit;
+    }
+    if ((int)$otpState['expires_at'] < time()) {
+        unset($store['forgot_password_otp']);
+        saveAdminAuthStore($store);
+        echo json_encode(['status' => 'error', 'message' => 'OTP expired. Please request a new code.']);
+        exit;
+    }
+
+    $attempts = (int)($otpState['attempts'] ?? 0);
+    if ($attempts >= 5) {
+        echo json_encode(['status' => 'error', 'message' => 'Too many invalid OTP attempts. Request a new code.']);
+        exit;
+    }
+
+    if (!password_verify($otpCode, (string)$otpState['otp_hash'])) {
+        $otpState['attempts'] = $attempts + 1;
+        $store['forgot_password_otp'] = $otpState;
+        saveAdminAuthStore($store);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid OTP code.']);
+        exit;
+    }
+
+    $store['password_hash'] = password_hash($newPass, PASSWORD_DEFAULT);
+    $store['must_change_password'] = false;
+    incrementSessionVersion($store);
+    $store['updated_at'] = time();
+    unset($store['forgot_password_otp']);
+
+    // Recovery-code flow is retired; keep store clean.
+    $store['recovery_enabled'] = false;
+    unset($store['totp_secret'], $store['recovery_code_hash'], $store['recovery_updated_at']);
+
+    if (!saveAdminAuthStore($store)) {
+        echo json_encode(['status' => 'error', 'message' => 'Unable to reset password right now.']);
+        exit;
+    }
+
+    clearSessionData();
+    echo json_encode(['status' => 'success', 'message' => 'Password reset successful.']);
     exit;
 }
 

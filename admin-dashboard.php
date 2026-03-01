@@ -2,10 +2,6 @@
 require_once 'backend/session.php';
 require_once 'backend/workflow.php';
 requireAdminSessionOrRedirect('admin-login.html');
-if (!isAdminRecoveryConfigured()) {
-    header("Location: admin-recovery-setup.html");
-    exit;
-}
 $csrfToken = getCsrfToken();
 $statusLabels = jthStatusLabels();
 $workflowTransitions = jthWorkflowTransitions();
@@ -337,14 +333,6 @@ $terminalStatuses = jthTerminalStatuses();
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7l7-4z"></path>
                     <path d="M9.5 12.5 11.5 14.5 15 11"></path>
-                </svg>
-            </button>
-            <button onclick="openRecoveryRegenerateModal()" class="text-zinc-400 hover:text-zinc-900 transition" title="Regenerate Recovery Code">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="8" cy="12" r="3"></circle>
-                    <path d="M11 12h10"></path>
-                    <path d="M18 12v3"></path>
-                    <path d="M21 12v2"></path>
                 </svg>
             </button>
             <button onclick="logout()" class="text-zinc-400 hover:text-red-600 transition" title="Sign Out">
@@ -992,6 +980,7 @@ $terminalStatuses = jthTerminalStatuses();
         let CUSTOMER_HISTORY_FILTER_FROM = '';
         let CUSTOMER_HISTORY_FILTER_TO = '';
         let PURGED_CUSTOMER_IDS = new Set();
+        let PURGED_CUSTOMER_NAMES = new Set();
         let AUDIT_FILTER_ACTION = 'all';
         let AUDIT_FILTER_ACTOR = 'all';
         let AUDIT_FILTER_FROM = '';
@@ -2150,10 +2139,13 @@ $terminalStatuses = jthTerminalStatuses();
             const byCustomer = {};
             GLOBAL_DATA.forEach((row) => {
                 const rowCustomerId = String(row.customer_id || '').trim();
-                const isPurgedInCustomerTab = rowCustomerId !== '' && PURGED_CUSTOMER_IDS.has(rowCustomerId);
+                const rawName = String(row.customer_name_snapshot || row.customer || row.name || 'Guest').trim();
+                const isPurgedById = rowCustomerId !== '' && PURGED_CUSTOMER_IDS.has(rowCustomerId);
+                const isPurgedByName = rawName !== '' && PURGED_CUSTOMER_NAMES.has(rawName.toLowerCase());
+                const isPurgedInCustomerTab = isPurgedById || isPurgedByName;
                 const name = isPurgedInCustomerTab
                     ? 'Removed Customer'
-                    : String(row.customer_name_snapshot || row.customer || row.name || 'Guest').trim();
+                    : rawName;
                 const key = rowCustomerId !== '' ? rowCustomerId : name.toLowerCase();
                 if (!byCustomer[key]) {
                     byCustomer[key] = {
@@ -2227,21 +2219,7 @@ $terminalStatuses = jthTerminalStatuses();
             if (!container) return;
             container.innerHTML = '';
 
-            const makeRetentionButton = () => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.textContent = 'Run Data Retention';
-                btn.className = 'px-2.5 py-1.5 text-[10px] font-semibold rounded-lg border border-zinc-300 bg-white text-zinc-700 hover:border-primary hover:text-primary transition whitespace-nowrap';
-                btn.title = 'Run customer data retention cleanup (12 months)';
-                btn.addEventListener('click', runRetentionPurge);
-                return btn;
-            };
-
             if (totalPages <= 1) {
-                const rightSimple = document.createElement('div');
-                rightSimple.className = 'flex items-center justify-end';
-                rightSimple.appendChild(makeRetentionButton());
-                container.appendChild(rightSimple);
                 return;
             }
 
@@ -2290,12 +2268,7 @@ $terminalStatuses = jthTerminalStatuses();
             left.appendChild(prevBtn);
             left.appendChild(pagesWrap);
 
-            const right = document.createElement('div');
-            right.className = 'flex w-full sm:w-auto items-center justify-between sm:justify-end gap-2';
-            right.appendChild(makeRetentionButton());
-
             container.appendChild(left);
-            container.appendChild(right);
         }
 
         async function fetchProductData() {
@@ -3238,84 +3211,6 @@ $terminalStatuses = jthTerminalStatuses();
             });
         }
 
-        async function openRecoveryRegenerateModal() {
-            const prompt = await Swal.fire({
-                title: 'Regenerate Recovery Code',
-                html: `
-                    <div class="text-left space-y-3">
-                        <p class="text-xs text-zinc-500">Enter your current password and authenticator code to generate a new recovery code.</p>
-                        <input id="regen-current-pass" type="password" class="w-full h-10 border border-zinc-300 rounded-md px-3 text-sm bg-white outline-none focus:border-zinc-900 transition" placeholder="Current password">
-                        <input id="regen-totp" type="text" maxlength="6" class="w-full h-10 border border-zinc-300 rounded-md px-3 text-sm bg-white outline-none focus:border-zinc-900 transition" placeholder="Authenticator code">
-                    </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: 'Regenerate',
-                cancelButtonText: 'Cancel',
-                preConfirm: () => {
-                    const current_password = String(document.getElementById('regen-current-pass')?.value || '');
-                    const totp_code = String(document.getElementById('regen-totp')?.value || '').replace(/\D+/g, '');
-                    if (!current_password) {
-                        Swal.showValidationMessage('Current password is required.');
-                        return false;
-                    }
-                    if (!/^\d{6}$/.test(totp_code)) {
-                        Swal.showValidationMessage('Authenticator code must be 6 digits.');
-                        return false;
-                    }
-                    return { current_password, totp_code };
-                },
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'rounded-xl border border-zinc-200 shadow-2xl p-0',
-                    title: 'text-left text-lg font-semibold text-zinc-900 px-6 pt-6 pb-0',
-                    htmlContainer: 'px-6 pt-3 pb-0',
-                    actions: 'w-full px-6 pb-6 pt-4 gap-2 justify-end',
-                    confirmButton: 'h-9 px-4 rounded-md bg-zinc-900 text-white text-xs font-semibold hover:bg-zinc-800 transition',
-                    cancelButton: 'h-9 px-4 rounded-md border border-zinc-300 bg-white text-zinc-700 text-xs font-semibold hover:bg-zinc-50 transition'
-                },
-                width: 470
-            });
-
-            if (!prompt.isConfirmed || !prompt.value) return;
-
-            try {
-                const req = await fetch('backend/auth.php?action=recovery_regenerate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': CSRF_TOKEN
-                    },
-                    body: JSON.stringify(prompt.value)
-                });
-                const res = await req.json();
-                if (!req.ok || res.status !== 'success' || !res.recovery_code) {
-                    throw new Error(res.message || 'Failed to regenerate recovery code.');
-                }
-
-                await Swal.fire({
-                    title: 'New Recovery Code',
-                    html: `
-                        <div class="text-left">
-                            <p class="text-xs text-zinc-500 mb-3">Save this offline now. Previous recovery code is no longer valid.</p>
-                            <code class="block text-sm font-bold bg-zinc-100 border border-zinc-200 rounded p-3 break-all">${res.recovery_code}</code>
-                        </div>
-                    `,
-                    confirmButtonText: 'Saved',
-                    buttonsStyling: false,
-                    customClass: {
-                        popup: 'rounded-xl border border-zinc-200 shadow-2xl p-0',
-                        title: 'text-left text-lg font-semibold text-zinc-900 px-6 pt-6 pb-0',
-                        htmlContainer: 'px-6 pt-3 pb-0',
-                        actions: 'w-full px-6 pb-6 pt-4 justify-end',
-                        confirmButton: 'h-9 px-4 rounded-md bg-zinc-900 text-white text-xs font-semibold hover:bg-zinc-800 transition'
-                    },
-                    width: 470
-                });
-            } catch (err) {
-                showCustomAlert('error', 'Regeneration Failed', err.message || 'Unable to regenerate recovery code.');
-            }
-        }
-
         async function saveChanges() {
             if (!ACTIVE_ID) return;
             const newStatus = document.getElementById('m-status').value;
@@ -3552,10 +3447,14 @@ $terminalStatuses = jthTerminalStatuses();
                 if (!res || res.status !== 'success') {
                     throw new Error((res && res.message) ? res.message : 'Retention purge failed.');
                 }
+                const scanned = Number(res.scanned_customers || 0);
+                const purged = Number(res.purged_customers || 0);
+                const failed = Number(res.failed_customers || 0);
+                const suffix = purged === 0 ? ` No records exceeded the ${Number(res.ttl_days || 365)}-day retention window.` : '';
                 showCustomAlert(
                     'success',
                     'Retention Purge Complete',
-                    `Scanned ${Number(res.scanned_customers || 0)} customer records. Purged ${Number(res.purged_customers || 0)} record(s). Failed: ${Number(res.failed_customers || 0)}.`
+                    `Scanned ${scanned} customer records. Purged ${purged} record(s). Failed: ${failed}.${suffix}`
                 );
                 await loadRetentionStatus();
                 await fetchLatestData({ silent: true });
@@ -3581,11 +3480,14 @@ $terminalStatuses = jthTerminalStatuses();
                 const state = (res && typeof res.state === 'object' && res.state) ? res.state : null;
                 if (!state || !state.last_run_at) {
                     PURGED_CUSTOMER_IDS = new Set();
+                    PURGED_CUSTOMER_NAMES = new Set();
                     label.textContent = 'Retention: no run yet';
                     return;
                 }
                 const purgedIds = Array.isArray(state.purged_customer_ids) ? state.purged_customer_ids : [];
+                const purgedNames = Array.isArray(state.purged_customer_names) ? state.purged_customer_names : [];
                 PURGED_CUSTOMER_IDS = new Set(purgedIds.map((v) => String(v || '').trim()).filter(Boolean));
+                PURGED_CUSTOMER_NAMES = new Set(purgedNames.map((v) => String(v || '').trim().toLowerCase()).filter(Boolean));
                 const lastRun = new Date(Number(state.last_run_at) * 1000);
                 const runText = Number.isNaN(lastRun.getTime())
                     ? 'unknown'
@@ -3594,6 +3496,7 @@ $terminalStatuses = jthTerminalStatuses();
                 label.textContent = `Retention • Last: ${runText} • Purged: ${purged}`;
             } catch (_) {
                 PURGED_CUSTOMER_IDS = new Set();
+                PURGED_CUSTOMER_NAMES = new Set();
                 label.textContent = 'Retention: unavailable';
             }
         }
