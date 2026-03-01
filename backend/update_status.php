@@ -194,35 +194,74 @@ if ($dateChanged) {
 $updates['history'] = $history; // Add to update payload
 
 $updateUrl = FIREBASE_URL . "bookings/$firebaseKey.json";
-$ch = curl_init($updateUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updates));
 $updateHttpHeaders = ['Content-Type: application/json'];
-curl_setopt($ch, CURLOPT_HTTPHEADER, $updateHttpHeaders);
-$updateErrNo = 0;
-$updateHttp = 0;
-$result = curl_exec($ch);
-$updateErrNo = curl_errno($ch);
-$updateHttp = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
 
-if ($updateErrNo !== 0 || $result === false || $result === '') {
-    http_response_code(503);
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Status update failed. Please retry.',
-        'reason' => 'firebase_unreachable'
-    ]);
-    exit;
+$patchBooking = static function (array $payload) use ($updateUrl, $updateHttpHeaders) {
+    $ch = curl_init($updateUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $updateHttpHeaders);
+    $raw = curl_exec($ch);
+    $errno = curl_errno($ch);
+    $http = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    $decoded = is_string($raw) ? json_decode($raw, true) : null;
+    $rejected = ($errno !== 0 || $raw === false || $raw === '' || $http >= 400 || (is_array($decoded) && isset($decoded['error'])));
+    return [
+        'ok' => !$rejected,
+        'raw' => $raw,
+        'errno' => $errno,
+        'http' => $http,
+        'decoded' => $decoded,
+    ];
+};
+
+$updateAttempt = $patchBooking($updates);
+
+if (!$updateAttempt['ok']) {
+    // Some strict DB rules reject history updates. Retry with minimal status payload.
+    $minimalUpdates = ['status' => $newStatus];
+    if ($dateChanged) {
+        $minimalUpdates['install_date'] = $newInstallDate;
+    }
+    if (isset($updates['type'])) {
+        $minimalUpdates['type'] = $updates['type'];
+    }
+    $retryAttempt = $patchBooking($minimalUpdates);
+
+    if (!$retryAttempt['ok'] && isset($minimalUpdates['type'])) {
+        // Final retry: status/date only, without optional type migration.
+        unset($minimalUpdates['type']);
+        $retryAttempt = $patchBooking($minimalUpdates);
+    }
+
+    if ($retryAttempt['ok']) {
+        $updateAttempt = $retryAttempt;
+    }
 }
+if (!$updateAttempt['ok']) {
+    $firebaseMessage = is_array($updateAttempt['decoded']) && isset($updateAttempt['decoded']['error'])
+        ? (is_string($updateAttempt['decoded']['error']) ? $updateAttempt['decoded']['error'] : 'Permission denied')
+        : ('HTTP ' . (int)$updateAttempt['http']);
 
-$updateDecoded = json_decode($result, true);
-if ($updateHttp >= 400 || (is_array($updateDecoded) && isset($updateDecoded['error']))) {
-    $firebaseMessage = is_array($updateDecoded) && isset($updateDecoded['error'])
-        ? (is_string($updateDecoded['error']) ? $updateDecoded['error'] : 'Permission denied')
-        : ('HTTP ' . $updateHttp);
-    http_response_code(400);
+    appLog('error', 'status_update_rejected', [
+        'booking_id' => $bookingId,
+        'errno' => (int)$updateAttempt['errno'],
+        'http' => (int)$updateAttempt['http'],
+        'details' => $firebaseMessage
+    ]);
+
+    if ((int)$updateAttempt['errno'] !== 0 || $updateAttempt['raw'] === false || $updateAttempt['raw'] === '') {
+        http_response_code(503);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Status update failed. Please retry.',
+            'reason' => 'firebase_unreachable'
+        ]);
+        exit;
+    }
+    http_response_code(503);
     echo json_encode([
         'status' => 'error',
         'message' => 'Status update rejected by database rules.',
