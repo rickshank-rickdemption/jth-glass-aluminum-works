@@ -540,7 +540,7 @@ $terminalStatuses = jthTerminalStatuses();
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-border space-y-3">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="relative hidden sm:block flex-1 min-w-0 sm:max-w-[320px]">
+                        <div class="relative flex-1 min-w-0 sm:max-w-[320px]">
                             <svg class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
@@ -2262,6 +2262,7 @@ $terminalStatuses = jthTerminalStatuses();
             left.className = 'flex flex-wrap items-center gap-2';
             left.appendChild(prevBtn);
             left.appendChild(pagesWrap);
+            left.appendChild(nextBtn);
 
             container.appendChild(left);
         }
