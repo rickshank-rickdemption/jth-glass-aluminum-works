@@ -1508,7 +1508,9 @@
                         ${showScreenLine ? `<div class="text-[12px] text-gray-400 leading-snug mt-0.5 break-words">${scr}</div>` : ''}
                     </div>
                     <div class="col-span-4 text-right">
-                        <div class="text-[14px] text-gray-100 leading-snug">${q} ×</div>
+                        <div class="inline-flex items-center justify-end w-full text-[14px] text-gray-100 leading-snug" dir="ltr">
+                            <span>${q}</span><span class="ml-1">x</span>
+                        </div>
                     </div>
                 `;
                 if (idx === lineItems.length - 1) {
