@@ -25,6 +25,8 @@ define('BOOKING_CUSTOMER_NAME_MAX', 80);
 define('BOOKING_ADDRESS_MIN', 8);
 define('BOOKING_ADDRESS_MAX', 220);
 define('BOOKING_EMAIL_OTP_VERIFIED_TTL_SECONDS', 1800);
+define('BOOKING_MIN_DIMENSION_FT', 0.1);
+define('BOOKING_MAX_DIMENSION_FT', 200.0);
 
 if (!function_exists('isPersistentlyVerifiedBookingEmail')) {
     function isPersistentlyVerifiedBookingEmail($email)
@@ -508,7 +510,14 @@ if ($method === 'POST') {
         $validProductKey = preg_match('/^[a-zA-Z0-9_-]{2,80}$/', $productKey);
         $validVariantKey = preg_match('/^[a-zA-Z0-9_-]{2,120}$/', $variantKey);
         $validQty = is_int($qty) && $qty >= 1 && $qty <= MAX_QTY_PER_LINE_ITEM;
-        $validDims = isPositiveFinite($width) && isPositiveFinite($height) && $width <= 200 && $height <= 200;
+        $validDims = (
+            isPositiveFinite($width) &&
+            isPositiveFinite($height) &&
+            $width >= BOOKING_MIN_DIMENSION_FT &&
+            $height >= BOOKING_MIN_DIMENSION_FT &&
+            $width <= BOOKING_MAX_DIMENSION_FT &&
+            $height <= BOOKING_MAX_DIMENSION_FT
+        );
 
         if (!$validProductKey || !$validVariantKey || !$validQty || !$validDims) {
             echo json_encode(['status' => 'error', 'message' => 'Invalid product item details.']);

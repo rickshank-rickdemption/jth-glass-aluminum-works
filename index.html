@@ -2140,6 +2140,8 @@
             const MAX_LINE_ITEMS = 20;
             const MAX_QTY_PER_ITEM = 500;
             const MAX_TOTAL_QTY = 3000;
+            const MIN_DIMENSION_FT = 0.1;
+            const MAX_DIMENSION_FT = 200;
             const peso = new Intl.NumberFormat('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             const leadTimeRules = [
                 { test: /sliding|window|door/i, badge: 'Fast', text: 'Estimated lead time: 7-12 working days after site validation and confirmation.' },
@@ -2160,6 +2162,28 @@
                 const parsed = parseInt(String(raw ?? '').replace(/\D+/g, ''), 10);
                 if (!Number.isInteger(parsed) || parsed < 1) return 1;
                 return Math.min(MAX_QTY_PER_ITEM, parsed);
+            };
+            const normalizeDimensionValue = (raw) => {
+                const parsed = parseFloat(String(raw ?? '').trim());
+                if (!Number.isFinite(parsed)) return 0;
+                if (parsed < MIN_DIMENSION_FT) return 0;
+                if (parsed > MAX_DIMENSION_FT) return MAX_DIMENSION_FT;
+                return parsed;
+            };
+            const clampDimensionInput = (inputEl) => {
+                if (!inputEl) return;
+                const raw = String(inputEl.value ?? '').trim();
+                if (raw === '') return;
+                const parsed = parseFloat(raw);
+                if (!Number.isFinite(parsed) || parsed < MIN_DIMENSION_FT) {
+                    inputEl.value = '';
+                    return;
+                }
+                if (parsed > MAX_DIMENSION_FT) {
+                    inputEl.value = String(MAX_DIMENSION_FT);
+                    return;
+                }
+                inputEl.value = String(parsed);
             };
             const recalcItemSubtotal = (item) => {
                 if (!item || typeof item !== 'object') return 0;
@@ -2221,11 +2245,11 @@
                     price = NaN;
                 }
 
-                const wVal = parseFloat(dom.w.value);
-                const hVal = parseFloat(dom.h.value);
+                const wVal = normalizeDimensionValue(dom.w.value);
+                const hVal = normalizeDimensionValue(dom.h.value);
                 const qVal = parseInt(dom.qty.value, 10);
-                const validW = isValidNumber(wVal);
-                const validH = isValidNumber(hVal);
+                const validW = isValidNumber(wVal) && wVal >= MIN_DIMENSION_FT && wVal <= MAX_DIMENSION_FT;
+                const validH = isValidNumber(hVal) && hVal >= MIN_DIMENSION_FT && hVal <= MAX_DIMENSION_FT;
                 const validQ = Number.isInteger(qVal) && qVal > 0;
                 const area = validW && validH ? (wVal * hVal) : 0;
                 const rawTotal = (isValidNumber(price) && area > 0 && validQ) ? (area * price * qVal) : 0;
@@ -2404,7 +2428,7 @@
                 const current = computeCurrentItem();
                 if (!current.valid || !current.item) {
                     dom.add.classList.add('animate-pulse');
-                    setInlineError(`Please complete valid values (qty 1-${MAX_QTY_PER_ITEM}, width/height up to 200ft).`);
+                    setInlineError(`Please complete valid values (qty 1-${MAX_QTY_PER_ITEM}, width/height ${MIN_DIMENSION_FT}-${MAX_DIMENSION_FT}ft).`);
                     setTimeout(() => dom.add.classList.remove('animate-pulse'), 400);
                     return;
                 }
@@ -2487,9 +2511,17 @@
 
             dom.scr.addEventListener('change', reCalc);
 
-            [dom.w, dom.h, dom.qty].forEach(el => {
-                el.addEventListener('input', reCalc);
+            [dom.w, dom.h].forEach(el => {
+                el.addEventListener('input', () => {
+                    clampDimensionInput(el);
+                    reCalc();
+                });
+                el.addEventListener('blur', () => {
+                    clampDimensionInput(el);
+                    reCalc();
+                });
             });
+            dom.qty.addEventListener('input', reCalc);
             dom.qty.addEventListener('input', () => {
                 let q = parseInt(dom.qty.value, 10);
                 if (!Number.isInteger(q) || q < 1) q = 1;

@@ -35,11 +35,11 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="text-xs font-bold uppercase text-gray-400">Width (ft)</label>
-                    <input type="number" step="0.1" id="width" class="input-box mt-1" required placeholder="0.0">
+                    <input type="number" step="0.1" min="0.1" max="200" id="width" class="input-box mt-1" required placeholder="0.0">
                 </div>
                 <div>
                     <label class="text-xs font-bold uppercase text-gray-400">Height (ft)</label>
-                    <input type="number" step="0.1" id="height" class="input-box mt-1" required placeholder="0.0">
+                    <input type="number" step="0.1" min="0.1" max="200" id="height" class="input-box mt-1" required placeholder="0.0">
                 </div>
             </div>
 
@@ -84,11 +84,31 @@
         }
 
         const RATES = { 'sliding_window': 350, 'casement': 450, 'glass_door': 850, 'shower_enclosure': 500 };
+        const MIN_DIMENSION_FT = 0.1;
+        const MAX_DIMENSION_FT = 200;
+        const normalizeDimension = (raw) => {
+            const parsed = parseFloat(String(raw ?? '').trim());
+            if (!Number.isFinite(parsed)) return 0;
+            if (parsed < MIN_DIMENSION_FT) return 0;
+            if (parsed > MAX_DIMENSION_FT) return MAX_DIMENSION_FT;
+            return parsed;
+        };
+        const clampDimensionInput = (inputEl) => {
+            if (!inputEl) return;
+            const raw = String(inputEl.value ?? '').trim();
+            if (raw === '') return;
+            const normalized = normalizeDimension(raw);
+            inputEl.value = normalized > 0 ? String(normalized) : '';
+        };
 
         ['width', 'height', 'product'].forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
-                const w = parseFloat(document.getElementById('width').value) || 0;
-                const h = parseFloat(document.getElementById('height').value) || 0;
+                const widthEl = document.getElementById('width');
+                const heightEl = document.getElementById('height');
+                clampDimensionInput(widthEl);
+                clampDimensionInput(heightEl);
+                const w = normalizeDimension(widthEl.value);
+                const h = normalizeDimension(heightEl.value);
                 const p = document.getElementById('product').value;
                 if(w && h) {
                     const price = w * h * RATES[p];
@@ -105,10 +125,19 @@
             btn.disabled = true;
 
             const recaptchaToken = await getRecaptchaToken('quote_submit');
+            const widthValue = normalizeDimension(document.getElementById('width').value);
+            const heightValue = normalizeDimension(document.getElementById('height').value);
+            if (widthValue <= 0 || heightValue <= 0) {
+                status.innerText = `Width/Height must be ${MIN_DIMENSION_FT}-${MAX_DIMENSION_FT} ft.`;
+                status.className = "text-center text-xs mt-2 font-bold h-4 text-red-600";
+                btn.disabled = false;
+                btn.innerText = "Submit Request";
+                return;
+            }
             const data = {
                 product: document.getElementById('product').value,
-                width: document.getElementById('width').value,
-                height: document.getElementById('height').value,
+                width: widthValue,
+                height: heightValue,
                 name: document.getElementById('name').value,
                 phone: document.getElementById('phone').value,
                 consent: true,
